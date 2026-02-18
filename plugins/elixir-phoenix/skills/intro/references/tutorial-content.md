@@ -168,8 +168,14 @@ The plugin uses **layered enforcement** — some things run automatically, some 
 | Security reminder | Editing auth/session/password files | Outputs relevant Iron Laws to context |
 | Progress logging | Every file edit | Appends to `.claude/plans/{slug}/progress.md` |
 | Plan stop | Writing a plan.md | Reminds Claude to stop and present the plan |
+| PreCompact rules | Before context compaction | Re-injects Iron Laws and workflow state so rules survive compaction |
 
 Format check **warns only** — it doesn't auto-fix (that would cause race conditions with the editor).
+
+The PreCompact hook detects active workflow phases (`/phx:plan`, `/phx:work`, `/phx:full`) and re-injects their critical rules
+before context compaction. This prevents "rule amnesia" where Claude loses behavioral constraints after context is compressed.
+
+Note: `verify-elixir.sh` exists in hooks.json but is a **no-op** (`exit 0`). Compilation was moved to `/phx:work` phase checkpoints for speed. The hook remains as a placeholder.
 
 ### Layer 2: Iron Laws in Skills (Behavioral)
 
@@ -191,7 +197,9 @@ CLAUDE.md instructs Claude to load specific skills based on file patterns:
 Any .ex file    → elixir-idioms (always)
 ```
 
-This is **not plugin infrastructure** — it's instructions that Claude follows. No hooks trigger skill loading. It works most of the time, but Claude can miss it.
+This is **not plugin infrastructure** — it's instructions that Claude follows. No hooks trigger skill loading.
+This is the plugin's biggest known gap — in practice, skills rarely auto-load from file context alone.
+Running `/phx:init` significantly improves this.
 
 ### Layer 4: `/phx:init` (Strengthens Everything)
 
@@ -236,7 +244,7 @@ Being honest about the gaps:
 
 | Check | Status | Why |
 |-------|--------|-----|
-| `mix compile --warnings-as-errors` | Workflow checkpoints only | Too slow on every edit |
+| `mix compile --warnings-as-errors` | `/phx:work` checkpoints only | `verify-elixir.sh` hook is a no-op — compilation runs in workflow steps |
 | `mix credo` | On-demand (`/phx:verify`) | Would add seconds to every edit |
 | `mix dialyzer` | On-demand (`/phx:verify`) | Takes minutes, not seconds |
 | Iron Law detection during coding | Behavioral only | `iron-law-judge` is review-time only |
@@ -278,6 +286,7 @@ The plugin works best when all layers are active: `/phx:init` for persistent rul
 | `/phx:investigate <bug>` | Structured bug investigation |
 | `/phx:verify` | Run all quality checks |
 | `/phx:research <topic>` | Research an Elixir topic |
+| `/phx:pr-review <PR#>` | Address PR review comments |
 
 **Analysis:**
 
