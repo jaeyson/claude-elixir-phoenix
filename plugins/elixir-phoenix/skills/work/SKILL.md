@@ -80,6 +80,7 @@ For each unchecked task (`- [ ] [Pn-Tm][agent] Description`):
 1. **Route** by `[agent]` annotation (see `references/execution-guide.md`)
 2. **Implement** the task
 3. **Verify**: `mix format` + `mix compile --warnings-as-errors`
+   (at phase end, also run `mix test <affected>` — see tiers below)
 4. **Mark** checkbox `[x]` on pass, **append implementation note**
    inline: key decisions, gotchas, actual values used. Example:
    `- [x] [P1-T3] Add user schema — citext for email, composite index on [user_id, status]`

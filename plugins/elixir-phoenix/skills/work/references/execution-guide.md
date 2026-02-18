@@ -225,7 +225,7 @@ BEFORE running tests:
 3. Add the new required fields with sensible defaults to EVERY factory
 4. THEN run the test suite
 
-This prevents cascading test failures (the ENA-7980 session hit 21
+This prevents cascading test failures (a previous session hit 21
 failures from missing factory fields that took ~3 min to debug).
 
 ### Module Existence Check

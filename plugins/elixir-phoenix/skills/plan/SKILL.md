@@ -22,7 +22,7 @@ structured plan with checkboxes.
 
 ```
 /phx:plan Add user avatars with S3 upload
-/phx:plan .claude/plans/playwright/reviews/playwright-review.md
+/phx:plan .claude/plans/notifications/reviews/notifications-review.md
 /phx:plan Implement notifications --depth deep
 /phx:plan .claude/plans/auth/plan.md --existing
 ```
