@@ -507,6 +507,7 @@ After writing `.claude/plans/{slug}/plan.md`, you MUST:
 1. Summarize the plan (task count, phases, key decisions)
 2. Use `AskUserQuestion` with these options:
    - "Start in fresh session" (recommended for 5+ tasks)
+   - "Get a briefing" (run `/phx:brief` for interactive walkthrough)
    - "Start here"
    - "Review the plan"
    - "Adjust the plan"
