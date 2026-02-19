@@ -341,12 +341,13 @@ When working on Elixir/Phoenix code, ALWAYS load relevant skills based on file c
 |--------------|------------------|------------------|
 | `*_live.ex`, `*_component.ex` | `liveview-patterns` | `references/async-streams.md` |
 | `*_channel.ex`, `*socket*` | `liveview-patterns` | `references/channels-presence.md` |
-| `*/workers/*`, `*_worker.ex`, `*_job.ex`, `*_agent.ex` | `oban` | `references/worker-patterns.md` |
+| `*/workers/*`, `*_worker.ex`, `*_worker_test.exs`, `*_job.ex`, `*_agent.ex` | `oban` | `references/worker-patterns.md` |
 | `*/migrations/*`, `*_schema.ex`, `*changeset*`, `schema "` | `ecto-patterns` | `references/queries.md`, `references/changesets.md` |
 | `*auth*`, `*session*`, `*password*` | `security` | `references/authentication.md`, `references/authorization.md` |
 | `*_test.exs`, `*factory*`, `*fixtures*` | `testing` | `references/exunit-patterns.md`, `references/mox-patterns.md`, `references/factory-patterns.md` |
 | `config/runtime.exs`, `Dockerfile`, `fly.toml` | `deploy` | `references/docker-config.md` |
 | `*/contexts/*`, `lib/*/[a-z]*.ex` | `phoenix-contexts` | `references/context-patterns.md` |
+| `lib/mix/tasks/*` | `elixir-idioms` | `references/mix-tasks.md` |
 | Any `.ex` or `.exs` file | `elixir-idioms` | Always check Iron Laws |
 
 ### Skill Loading Behavior
@@ -370,6 +371,27 @@ When the user's FIRST message describes work without specifying a `/phx:` comman
 ### Debugging Loop Detection
 
 When 3+ consecutive Bash commands are `mix compile` or `mix test` with failures, suggest: "Looks like a debugging loop. Want me to run `/phx:investigate` for structured analysis?"
+
+### LiveView Bug Detection via Tidewave Context
+
+When the user's message contains a `<context name="current-page">` block (injected by Tidewave) describing a broken form, missing element, or UI issue — proactively suggest: "This looks like a LiveView bug. Want me to run `/phx:investigate` for structured root-cause analysis?"
+
+### Custom MIX_ENV Awareness
+
+Some projects use non-standard Mix environments (e.g., `MIX_ENV=int_test` for E2E tests). When you see:
+- `config/int_test.exs` or other non-standard env config files
+- `MIX_ENV=` in mix.exs aliases
+- User running `MIX_ENV=<custom> mix compile/test`
+
+Then use that MIX_ENV for ALL compile, test, and format commands on those files. Do NOT use default MIX_ENV for files that only compile under the custom env.
+
+### Scoped Format and Compile Checks
+
+When running `mix format --check-formatted` or `mix compile`, **always scope to the files you changed** when possible. If a full-project check fails on files you didn't edit, report it as pre-existing and continue — do NOT waste time debugging unrelated format failures.
+
+### Sibling File Check
+
+When fixing a bug in a file that has named variants (e.g., `seller_account/form.ex`, `buyer_account/form.ex`, `occupier_account/form.ex`), proactively grep for all sibling files and check if the same bug exists in each variant. Do this BEFORE implementing the fix, not after.
 
 ## Iron Laws Enforcement (NON-NEGOTIABLE)
 
@@ -428,6 +450,10 @@ These rules are NEVER violated. If code would violate them, **STOP and explain**
 
 20. **WRAP THIRD-PARTY LIBRARY APIs** - Always facade external dependency APIs behind a project-owned module. Enables swapping libraries without touching callers
 
+### LiveView Iron Laws (continued)
+
+21. **NEVER use `assign_new` for values refreshed every mount** - `assign_new` skips the function if the key exists. Use `assign/3` for locale, current user, or any value that must be set on every mount
+
 ### Violation Response
 
 When detecting a potential Iron Law violation:
@@ -484,7 +510,7 @@ When working on code, automatically consult relevant reference documentation bef
 | `priv/repo/migrations/*` | ecto-patterns | migrations.md |
 | `use Ecto.Schema`, `*changeset*` | ecto-patterns | changesets.md |
 | `from(` or `Repo.` | ecto-patterns | queries.md |
-| `*/workers/*`, `*_worker.ex`, `*_agent.ex` | oban | worker-patterns.md |
+| `*/workers/*`, `*_worker.ex`, `*_worker_test.exs`, `*_agent.ex` | oban | worker-patterns.md |
 | `use Oban.Worker` | oban | worker-patterns.md, queue-config.md |
 | `*auth*`, `*session*` | security | authentication.md, authorization.md |
 | `oauth`, `ueberauth` | security | oauth-linking.md |
@@ -498,6 +524,7 @@ When working on code, automatically consult relevant reference documentation bef
 | `plug` in router/controller | phoenix-contexts | plug-patterns.md |
 | `Dockerfile`, `fly.toml` | deploy | docker-config.md, flyio-config.md |
 | `use GenServer` | elixir-idioms | otp-patterns.md |
+| `lib/mix/tasks/*` | elixir-idioms | mix-tasks.md |
 
 ### Consultation Behavior
 
@@ -512,6 +539,7 @@ When working on code, automatically consult relevant reference documentation bef
 |-------------|---------|
 | New to the plugin | `/phx:intro` |
 | Bug fix, debug | `/phx:investigate` |
+| Small UI fix, CSS tweak, config change | `/phx:quick` |
 | Small change (<50 lines) | `/phx:quick` |
 | New feature (clear scope) | `/phx:plan` then `/phx:work` |
 | Understand a plan | `/phx:brief` |
@@ -535,6 +563,8 @@ When working on code, automatically consult relevant reference documentation bef
 | Validate plugin against docs | `/docs-check` |
 
 **Workflow Commands**: `/phx:plan` -> `/phx:brief` (optional) -> `/phx:plan --existing` (optional) -> `/phx:work` -> `/phx:brief` (optional) -> `/phx:review` -> `/phx:triage` (optional) -> `/phx:compound`
+
+**Review → Follow-up Plan**: After `/phx:review`, if findings reveal scope gaps or missing coverage, use `/phx:plan .claude/plans/{slug}/reviews/{review}.md` to create a follow-up plan from review output.
 
 **Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`
 

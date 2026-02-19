@@ -18,6 +18,7 @@ Reference for building with Phoenix LiveView 1.0/1.1.
 6. **NEVER PASS SOCKET TO BUSINESS LOGIC** — Extract data before calling contexts
 7. **CHECK CHANGESET ERRORS BEFORE UI DEBUGGING** — Silent form save = check `{:error, changeset}` first, not viewport/JS
 8. **HIDDEN INPUTS FOR ALL REQUIRED EMBEDDED FIELDS** — Every required field in an embedded schema MUST have a `hidden_input` if not directly editable
+9. **NEVER USE `assign_new` FOR LIFECYCLE VALUES** — `assign_new` skips the function if key exists. Use `assign/3` for locale, current user, or any value refreshed every mount
 
 ## Memory Impact
 
@@ -95,6 +96,7 @@ Does component need BOTH internal state AND event handling?
 | PubSub subscribe without `connected?` | `if connected?(socket), do: subscribe()` |
 | Passing socket to context functions | Extract `socket.assigns` first |
 | Business logic in `handle_event` | Delegate to context |
+| `assign_new` for locale/user in hooks | `assign/3` (must run every mount) |
 
 ## References
 
