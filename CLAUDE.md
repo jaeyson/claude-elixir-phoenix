@@ -374,11 +374,14 @@ When 3+ consecutive Bash commands are `mix compile` or `mix test` with failures,
 
 ### LiveView Bug Detection via Tidewave Context
 
-When the user's message contains a `<context name="current-page">` block (injected by Tidewave) describing a broken form, missing element, or UI issue — proactively suggest: "This looks like a LiveView bug. Want me to run `/phx:investigate` for structured root-cause analysis?"
+When the user's message contains a `<context name="current-page">` block (injected by Tidewave)
+describing a broken form, missing element, or UI issue — proactively suggest:
+"This looks like a LiveView bug. Want me to run `/phx:investigate` for structured root-cause analysis?"
 
 ### Custom MIX_ENV Awareness
 
 Some projects use non-standard Mix environments (e.g., `MIX_ENV=int_test` for E2E tests). When you see:
+
 - `config/int_test.exs` or other non-standard env config files
 - `MIX_ENV=` in mix.exs aliases
 - User running `MIX_ENV=<custom> mix compile/test`
@@ -387,11 +390,15 @@ Then use that MIX_ENV for ALL compile, test, and format commands on those files.
 
 ### Scoped Format and Compile Checks
 
-When running `mix format --check-formatted` or `mix compile`, **always scope to the files you changed** when possible. If a full-project check fails on files you didn't edit, report it as pre-existing and continue — do NOT waste time debugging unrelated format failures.
+When running `mix format --check-formatted` or `mix compile`, **always scope to the files you changed**
+when possible. If a full-project check fails on files you didn't edit, report it as pre-existing
+and continue — do NOT waste time debugging unrelated format failures.
 
 ### Sibling File Check
 
-When fixing a bug in a file that has named variants (e.g., `seller_account/form.ex`, `buyer_account/form.ex`, `occupier_account/form.ex`), proactively grep for all sibling files and check if the same bug exists in each variant. Do this BEFORE implementing the fix, not after.
+When fixing a bug in a file that has named variants (e.g., `seller_account/form.ex`,
+`buyer_account/form.ex`, `occupier_account/form.ex`), proactively grep for all sibling files and
+check if the same bug exists in each variant. Do this BEFORE implementing the fix, not after.
 
 ## Iron Laws Enforcement (NON-NEGOTIABLE)
 

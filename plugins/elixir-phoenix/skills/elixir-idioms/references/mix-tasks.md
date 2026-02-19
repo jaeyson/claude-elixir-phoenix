@@ -19,6 +19,7 @@ end
 ```
 
 **Rules:**
+
 - Module name segments map to `.`-separated CLI words
 - `CamelCase` in module → `snake_case` in CLI
 - `@shortdoc` is REQUIRED (shows in `mix help`)

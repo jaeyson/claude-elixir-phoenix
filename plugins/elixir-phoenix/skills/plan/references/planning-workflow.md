@@ -125,6 +125,7 @@ to `.claude/plans/{slug}/scratchpad.md` under a `## Infrastructure`
 heading. This prevents re-exploration in follow-up sessions.
 
 Signals that knowledge is infrastructure (not feature-specific):
+
 - Test setup patterns (`test/support/`, `test/int_support/`)
 - Custom MIX_ENV configurations
 - Factory/fixture patterns
