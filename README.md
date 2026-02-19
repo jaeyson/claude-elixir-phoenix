@@ -42,7 +42,7 @@ New to the plugin? Run the interactive tutorial:
 /phx:intro
 ```
 
-It walks through the workflow, commands, and features in 4 short sections (~3 min).
+It walks through the workflow, commands, and features in 5 short sections (~5 min).
 Skip to any section with `/phx:intro --section N`.
 
 ## Quick Examples
@@ -79,17 +79,18 @@ and enforces [Iron Laws](#iron-laws-non-negotiable-rules) that prevent common El
 
 ### The Lifecycle
 
-The plugin implements a **Plan, Work, Review, Compound** lifecycle. Each phase produces artifacts in a namespaced directory:
+The plugin implements a **Plan, Work, Verify, Review, Compound** lifecycle. Each phase produces artifacts in a namespaced directory:
 
 ```
-/phx:plan → /phx:work → /phx:review → /phx:compound
-     │           │            │              │
-     ↓           ↓            ↓              ↓
-plans/{slug}/  (in namespace) (in namespace) solutions/
+/phx:plan → /phx:work → /phx:verify → /phx:review → /phx:compound
+     │           │            │              │              │
+     ↓           ↓            ↓              ↓              ↓
+plans/{slug}/  (in namespace) (in namespace) (in namespace) solutions/
 ```
 
 - **Plan** -- Research agents analyze your codebase in parallel, then synthesize a structured implementation plan
-- **Work** -- Execute the plan task-by-task with automatic verification after each change
+- **Work** -- Execute the plan task-by-task with quick compile checks after each change
+- **Verify** -- Full verification loop (compile, format, credo, test) before review
 - **Review** -- Four specialist agents audit your code in parallel (idioms, security, tests, static analysis)
 - **Compound** -- Capture what you learned as reusable knowledge for future sessions
 
@@ -339,7 +340,7 @@ For hands-off development:
 /phx:full Add user profile avatars with S3 upload
 ```
 
-Runs the complete cycle: plan (with research), work, review. Cycles back automatically if review finds issues. Captures learnings on completion.
+Runs the complete cycle: plan (with research), work, verify, review. After review fixes, re-verifies before cycling back. Captures learnings on completion.
 
 ## Workflow Tips
 
@@ -395,7 +396,9 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 
 **Security:** No `String.to_atom` with user input. Authorize in every LiveView `handle_event`. Never use `raw/1` with untrusted content.
 
-**OTP:** No process without a runtime reason.
+**OTP:** No process without a runtime reason. Supervise all long-lived processes.
+
+**Elixir:** Declare `@external_resource` for compile-time files. Wrap third-party library APIs behind project-owned modules. Never use `assign_new` for values refreshed every mount.
 
 ## Commands Reference
 
@@ -403,7 +406,7 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 
 | Command                 | Description                                          |
 | ----------------------- | ---------------------------------------------------- |
-| `/phx:full <feature>`   | Full autonomous cycle (plan, work, review, compound) |
+| `/phx:full <feature>`   | Full autonomous cycle (plan, work, verify, review, compound) |
 | `/phx:plan <input>`     | Create implementation plan with specialist agents    |
 | `/phx:plan --existing`  | Enhance existing plan with deeper research           |
 | `/phx:work <plan-file>` | Execute plan tasks with verification                 |
@@ -417,7 +420,7 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 
 | Command                  | Description                                                |
 | ------------------------ | ---------------------------------------------------------- |
-| `/phx:intro`             | Interactive plugin tutorial (4 sections, ~3 min)           |
+| `/phx:intro`             | Interactive plugin tutorial (5 sections, ~5 min)           |
 | `/phx:init`              | Initialize plugin in a project (auto-activation rules)     |
 | `/phx:quick <task>`      | Fast implementation, skip ceremony                         |
 | `/phx:investigate <bug>` | Systematic bug debugging (4 parallel investigation tracks) |

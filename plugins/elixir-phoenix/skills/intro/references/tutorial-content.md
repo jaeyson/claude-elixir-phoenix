@@ -16,11 +16,11 @@ This plugin adds **specialist Elixir/Phoenix agents**, **auto-loaded knowledge**
 Everything revolves around a 4-phase workflow cycle:
 
 ```text
-/phx:plan  -->  /phx:work  -->  /phx:review  -->  /phx:compound
-   |               |                |                   |
-   v               v                v                   v
- Research &    Execute with     Parallel agent     Capture what
- plan tasks    verification     code review        you learned
+/phx:plan → /phx:work → /phx:verify → /phx:review → /phx:compound
+   |             |            |              |              |
+   v             v            v              v              v
+ Research &   Execute     Full check     Parallel       Capture what
+ plan tasks   tasks       compile/test   code review    you learned
 ```
 
 Each phase reads from the previous phase's output. Plans become checkboxes. Checkboxes track progress. Reviews catch mistakes. Compound knowledge makes future work faster.
@@ -31,7 +31,7 @@ Each phase reads from the previous phase's output. Plans become checkboxes. Chec
 |---------|-------------|
 | 20 specialist agents | Ecto, LiveView, security, OTP, Oban, deployment experts |
 | 38 skills | Commands for every phase of development |
-| 20 Iron Laws | Non-negotiable rules enforced automatically |
+| 21 Iron Laws | Non-negotiable rules enforced automatically |
 | Auto-loaded references | Context-aware docs loaded when you edit relevant files |
 | Tidewave integration | Runtime debugging when Tidewave MCP is connected |
 
@@ -67,7 +67,7 @@ Not everything needs the full cycle:
 | Command | When to Use | Time |
 |---------|------------|------|
 | `/phx:quick` | Bug fixes, small features (<100 lines) | ~2 min |
-| `/phx:full` | New features, autonomous plan-work-review | ~10 min |
+| `/phx:full` | New features, autonomous plan-work-verify-review | ~10 min |
 | `/phx:investigate` | Debugging — checks obvious things first | ~3 min |
 
 ### Decision Guide
@@ -111,7 +111,7 @@ The plugin loads relevant reference docs based on what you're editing:
 
 This means you don't need to explicitly load anything — open a LiveView file and the plugin already knows the patterns.
 
-### Iron Laws (20 Rules, Always Enforced)
+### Iron Laws (21 Rules, Always Enforced)
 
 Iron Laws are non-negotiable rules that every agent enforces. If your code violates one, the plugin stops and explains before proceeding.
 
@@ -247,8 +247,9 @@ Being honest about the gaps:
 
 | Check | Status | Why |
 |-------|--------|-----|
-| `mix compile --warnings-as-errors` | `/phx:work` checkpoints only | `verify-elixir.sh` hook is a no-op — compilation runs in workflow steps |
-| `mix credo` | On-demand (`/phx:verify`) | Would add seconds to every edit |
+| `mix compile --warnings-as-errors` | `/phx:work` checkpoints + `/phx:full` VERIFYING phase | `verify-elixir.sh` hook is a no-op — compilation runs in workflow steps |
+| `mix credo` | `/phx:full` VERIFYING phase + on-demand (`/phx:verify`) | Not run per-task edit, only between phases |
+| `mix test` | `/phx:full` VERIFYING phase + on-demand (`/phx:verify`) | Not run per-task, only between phases |
 | `mix dialyzer` | On-demand (`/phx:verify`) | Takes minutes, not seconds |
 | Iron Law detection during coding | Behavioral only | `iron-law-judge` is review-time only |
 
