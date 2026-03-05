@@ -129,6 +129,16 @@ PR receives review comments
    Push changes → user handles git push
 ```
 
+## Next Steps
+
+After addressing review comments, suggest follow-up:
+
+```
+- `/phx:plan` — Create a plan if findings reveal scope gaps
+- `/phx:verify` — Run full verification before pushing
+- Push changes — user handles git push
+```
+
 ## References
 
 - `references/response-patterns.md` — Response templates and common patterns

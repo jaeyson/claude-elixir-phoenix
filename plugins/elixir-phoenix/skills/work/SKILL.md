@@ -36,6 +36,10 @@ Execute tasks from a plan file with checkpoint tracking and verification.
 4. **Verify after EVERY task** -- never skip verification
 5. **Max 3 retries then BLOCKER** -- don't keep retrying forever
 6. **Stage specific files** -- never use `git add -A` or `git add .`
+7. **Read scratchpad BEFORE implementing** -- scratchpad has dead-ends
+   and decisions that prevent rework. Step 2 is not optional.
+8. **Clarify ambiguous tasks** -- ask the user rather than guessing
+   when a plan task's intent is unclear
 
 ## Step 1: Research Decision
 
@@ -52,17 +56,22 @@ Skip for plans with 3 or fewer simple tasks -- just start.
 > **Split warning**: Plans with >10 tasks risk 2-3 context
 > compactions. Suggest splitting via `/phx:plan` if not already.
 
-## Step 2: Check Context
+## Step 2: Check Context (MANDATORY)
 
-Check compound docs and scratchpad for prior decisions:
+Read scratchpad and compound docs before writing any code.
+Skipping this causes rework — scratchpad captures dead-ends
+and decisions from planning that prevent taking wrong paths.
 
 ```bash
+# Read full scratchpad — it's short and has critical context
+cat .claude/plans/{slug}/scratchpad.md 2>/dev/null
+# Check compound docs for solved patterns
 grep -rl "KEYWORD" .claude/solutions/ 2>/dev/null
-grep -A 3 "DECISION\|DEAD-END" .claude/plans/{slug}/scratchpad.md 2>/dev/null
 ```
 
-Apply findings: skip dead-ends, follow decisions. Don't load
-the entire scratchpad — targeted grep only.
+Apply findings: skip dead-ends, follow decisions, reuse patterns.
+If a task's intent is ambiguous, ask the user before implementing
+rather than guessing — corrections are expensive.
 
 ## Step 3: Load and Resume
 

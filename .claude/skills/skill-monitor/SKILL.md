@@ -63,7 +63,20 @@ For each skill found across all sessions, aggregate:
 | Avg post-corrections| Weighted avg of avg_post_corrections           |
 | Outcome distribution| Count of effective/friction/no_action/mixed    |
 | Effectiveness score | action_rate - (0.3 * avg_post_corrections)     |
+| Adjusted score      | For analysis/check skills, use lower thresholds |
 ```
+
+**Skill type weighting**: Analysis and check skills (verify, triage,
+perf, boundaries, pr-review, audit) have low action rates BY DESIGN —
+their success is "found issues" or "confirmed things pass". Apply
+adjusted thresholds:
+
+| Skill Type | Flag Threshold | Expected Action Rate |
+|------------|---------------|---------------------|
+| Execution (work, quick, full) | < 0.5 | > 0.7 |
+| Analysis (perf, boundaries, audit, pr-review) | < 0.3 | 0.3-0.5 |
+| Check (verify, triage) | < 0.1 | 0.0-0.3 |
+| Knowledge (compound, learn, brief) | < 0.5 | > 0.5 |
 
 Also compute **baseline friction** (avg friction of sessions WITHOUT
 any skill usage) vs **skill friction** (avg friction of sessions
@@ -88,8 +101,10 @@ Baseline friction (no skills): 0.32 | With skills: 0.18 | Delta: -0.14
 Skills needing attention: /phx:investigate (high post-errors)
 ```
 
-Flag skills where: effectiveness_score < 0.5, avg_post_corrections > 1,
-or outcome is predominantly "friction".
+Flag skills using type-adjusted thresholds (see weighting table above).
+Also flag if avg_post_corrections > 1 or outcome is predominantly "friction".
+When displaying flagged skills, note if the flag is "expected" for the
+skill type (e.g., verify at 0.24 is normal for a check skill).
 
 **Skill deep-dive** (`--skill NAME`):
 

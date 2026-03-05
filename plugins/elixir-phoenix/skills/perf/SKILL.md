@@ -99,11 +99,14 @@ Present findings sorted by priority:
 
 ### Step 5: Offer Next Steps
 
+Always end with actionable next steps — findings without follow-up
+get lost. Present options based on severity:
+
 ```
 How would you like to proceed?
 
-- `/phx:plan` — Plan the optimizations
-- `/phx:work` — Apply top priority fix directly
+- `/phx:plan` — Create a plan from these findings (recommended for 3+ fixes)
+- `/phx:quick` — Apply top priority fix directly (1-2 simple fixes)
 - `/phx:investigate` — Deep-dive into a specific finding
 ```
 

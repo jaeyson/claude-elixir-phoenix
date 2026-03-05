@@ -21,6 +21,12 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **`work` skill** — Added mandatory scratchpad read before implementing + clarify-ambiguous-tasks
+  Iron Law. Addresses high correction rate (0.61) from skill-monitor data
+- **`skill-monitor`** — Added skill-type weighting so analysis/check skills (verify, triage, perf,
+  boundaries) use appropriate thresholds instead of universal 0.5 cutoff
+- **`perf`, `boundaries`, `pr-review`** — Added "findings to plan" next-steps nudge so analysis
+  results lead to actionable follow-up instead of getting lost
 - **`full` skill** — Added missing Iron Laws section (5 rules: verification, cycle limits,
   state transitions, discover-first, agent output boundaries)
 - **`audit` skill** — Trimmed from 192 to 154 lines (was over 185 hard limit)

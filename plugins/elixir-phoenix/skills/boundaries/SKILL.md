@@ -137,6 +137,17 @@ mix xref graph --format cycles
 4. Ensure schemas have no side effects
 5. Validate explicit cross-context dependencies
 
+## Next Steps
+
+Always end with actionable follow-up — findings without a plan
+get lost:
+
+```
+- `/phx:plan` — Create a plan to fix violations (recommended for 3+ issues)
+- `/phx:quick` — Fix a single boundary violation directly
+- `/phx:review` — Review specific modules for deeper issues
+```
+
 ## References
 
 For detailed patterns, see:
