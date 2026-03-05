@@ -4,6 +4,8 @@
 FILE_PATH=$(cat | jq -r '.tool_input.file_path // empty')
 if [[ "$FILE_PATH" == *.ex ]] || [[ "$FILE_PATH" == *.exs ]]; then
   if ! mix format --check-formatted "$FILE_PATH" 2>/dev/null; then
-    echo "NEEDS FORMAT: $FILE_PATH — run 'mix format' before committing"
+    # PostToolUse: exit 2 + stderr feeds message to Claude (stdout is verbose-mode only)
+    echo "NEEDS FORMAT: $FILE_PATH — run 'mix format' before committing" >&2
+    exit 2
   fi
 fi

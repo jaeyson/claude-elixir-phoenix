@@ -574,13 +574,10 @@ def compute_skill_effectiveness(user_msgs, tool_calls, errors, messages):
         return {}
 
     # Build tool call index: map message index -> tool calls in that range
-    # We approximate by splitting tool_calls proportionally across messages
     total_msgs = len(messages)
-    total_tools = len(tool_calls)
 
-    # Extract tool_calls with approximate message positions
+    # Extract tool_calls with message positions
     tool_positions = []
-    tool_idx = 0
     for i, msg in enumerate(messages):
         if not isinstance(msg, dict):
             continue
@@ -589,24 +586,21 @@ def compute_skill_effectiveness(user_msgs, tool_calls, errors, messages):
         if isinstance(content, list):
             for block in content:
                 if isinstance(block, dict) and block.get("type") == "tool_use":
-                    tool_positions.append({"index": tool_idx, "msg_index": i, "tc": block})
-                    tool_idx += 1
+                    tool_positions.append({"msg_index": i, "tc": block})
         elif isinstance(content, str) and role == "assistant":
             mentioned = TOOL_MENTION_RE.findall(content)
             for name in mentioned:
                 tool_positions.append({
-                    "index": tool_idx, "msg_index": i,
+                    "msg_index": i,
                     "tc": {"name": name, "input": {}},
                 })
-                tool_idx += 1
 
     results = {}
     for inv in invocations:
         skill = inv["skill"]
         msg_idx = inv["msg_index"]
 
-        # Collect tools before and after this skill invocation
-        pre_tools = [tp for tp in tool_positions if tp["msg_index"] < msg_idx]
+        # Collect tools after this skill invocation
         post_tools = [tp for tp in tool_positions if tp["msg_index"] > msg_idx]
 
         # Window: next 50 tool calls after invocation (or until next skill)
@@ -624,21 +618,28 @@ def compute_skill_effectiveness(user_msgs, tool_calls, errors, messages):
         post_reads = sum(
             1 for tp in window_tools if tp["tc"].get("name") in ("Read", "Grep", "Glob")
         )
-        post_bash = sum(
-            1 for tp in window_tools if tp["tc"].get("name") == "Bash"
-        )
-        post_test_runs = sum(
-            1 for tp in window_tools
-            if tp["tc"].get("name") == "Bash"
-            and "mix test" in tp["tc"].get("input", {}).get("command", "")
-        )
+        # For API-format: check input.command; for ccrider-format: check surrounding text
+        post_test_runs = 0
+        for tp in window_tools:
+            if tp["tc"].get("name") != "Bash":
+                continue
+            cmd = tp["tc"].get("input", {}).get("command", "")
+            if cmd and "mix test" in cmd:
+                post_test_runs += 1
+            elif not cmd:
+                # ccrider-format: tool input is empty, check assistant text at this position
+                mi = tp["msg_index"]
+                if mi < len(messages) and isinstance(messages[mi], dict):
+                    text = _get_content(messages[mi])
+                    if isinstance(text, str) and "mix test" in text:
+                        post_test_runs += 1
 
         # Post-skill errors (from messages in the window)
         window_msgs = [
-            m for m in messages
+            m for j, m in enumerate(messages)
             if isinstance(m, dict)
-            and messages.index(m) > msg_idx
-            and messages.index(m) < next_skill_idx
+            and j > msg_idx
+            and j < next_skill_idx
         ]
         post_errors = len(extract_errors(window_msgs))
 
@@ -906,6 +907,7 @@ def backfill_from_v1(extract_path):
         "tool_bigrams": {},
         "file_hotspots": [],
         "file_categories": v1.get("file_categories", {}),
+        "skill_effectiveness": {},
         "session_chain": {"previous_session_id": None, "chain_length": 1},
         "tier2_eligible": friction_score > 0.35 or opportunity_score > 0.5,
         "tier2_reason": None,

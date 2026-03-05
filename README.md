@@ -543,6 +543,10 @@ you can analyze your own sessions to find patterns that the plugin should handle
 # Trends: Windowed aggregates (7d/30d/all) from metrics ledger
 /session-trends
 /session-trends --compare baseline
+
+# Skill effectiveness monitoring (requires session-scan data)
+/skill-monitor                  # Dashboard: all skills
+/skill-monitor --improve        # Generate improvement recommendations
 ```
 
 ### What session analysis finds

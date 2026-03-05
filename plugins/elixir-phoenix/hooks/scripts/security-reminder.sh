@@ -8,11 +8,15 @@ fi
 # Check if file path matches security-sensitive patterns
 BASENAME=$(basename "$FILE_PATH")
 if echo "$FILE_PATH" | grep -qiE '(auth|session|password|token|permission|admin|payment|login|credential|secret)'; then
-  echo "SECURITY FILE DETECTED: $BASENAME"
-  echo "Iron Laws — verify these apply:"
-  echo "  - AUTHORIZE in EVERY LiveView handle_event (don't trust mount auth)"
-  echo "  - NO String.to_atom with user input (atom exhaustion DoS)"
-  echo "  - NEVER use raw/1 with untrusted content (XSS)"
-  echo "  - Pin values with ^ in Ecto queries (no user input interpolation)"
-  echo "Consider: /phx:review security for full security audit"
+  # PostToolUse: exit 2 + stderr feeds message to Claude (stdout is verbose-mode only)
+  cat >&2 <<MSG
+SECURITY FILE DETECTED: $BASENAME
+Iron Laws — verify these apply:
+  - AUTHORIZE in EVERY LiveView handle_event (don't trust mount auth)
+  - NO String.to_atom with user input (atom exhaustion DoS)
+  - NEVER use raw/1 with untrusted content (XSS)
+  - Pin values with ^ in Ecto queries (no user input interpolation)
+Consider: /phx:review security for full security audit
+MSG
+  exit 2
 fi

@@ -200,19 +200,34 @@ Defined in `hooks/hooks.json`:
 ```json
 {
   "hooks": {
-    "PostToolUse": [...],   // Format + progress logging
-    "SessionStart": [...],  // Directory setup + Tidewave detection
-    "Stop": [...]           // Warn if uncompleted tasks
+    "PostToolUse": [...],          // Format + security + progress + plan STOP
+    "PostToolUseFailure": [...],   // Elixir failure hints for mix commands
+    "SubagentStart": [...],        // Iron Laws injection into all subagents
+    "SessionStart": [...],         // Setup dirs + Tidewave + resume detection
+    "PreCompact": [...],           // Re-inject workflow rules before compaction
+    "Stop": [...]                  // Warn if uncompleted tasks
   }
 }
 ```
 
 **Current hooks:**
 
-- `PostToolUse`: Auto `mix format` + `mix compile --warnings-as-errors` (silent on success) + security Iron Laws reminder for auth files + append to progress file + plan STOP reminder on plan.md write
-- `PreCompact`: Re-inject Iron Laws and critical planning rules before context compaction (prevents rule loss)
-- `SessionStart`: Tidewave detection, create `.claude/` directories, scratchpad check, resume workflow detection, workflow hints
+- `PostToolUse` (Edit|Write): Auto `mix format --check-formatted`, security Iron Laws for auth files,
+  async progress logging, plan STOP reminder on plan.md write (all use exit 2 + stderr)
+- `PostToolUseFailure` (Bash): Elixir-specific debugging hints when mix compile/test/credo/ecto fails, injected via `additionalContext`
+- `SubagentStart`: Inject all Iron Laws into every spawned subagent via `additionalContext` (addresses zero skill auto-loading gap)
+- `PreCompact`: Re-inject workflow rules (plan/work/full) before compaction via JSON `additionalContext` (stdout has no context injection on PreCompact)
+- `SessionStart` (all): Setup `.claude/` directories + Tidewave detection
+- `SessionStart` (startup|resume only): Scratchpad check + resume workflow detection + branch freshness + workflow hints
 - `Stop`: Warn if plans have unchecked tasks
+
+**Hook output patterns (important for contributors):**
+
+- `PostToolUse` stdout is **verbose-mode only** — use `exit 2` + stderr to feed messages to Claude
+- `PreCompact` has **no stdout context injection** — use JSON `hookSpecificOutput.additionalContext`
+- `SessionStart` stdout IS added to Claude's context (one of two exceptions along with `UserPromptSubmit`)
+- `SubagentStart` uses `hookSpecificOutput.additionalContext` to inject context into subagents
+- `PostToolUseFailure` uses `hookSpecificOutput.additionalContext` for debugging hints
 
 ### Tidewave Integration
 

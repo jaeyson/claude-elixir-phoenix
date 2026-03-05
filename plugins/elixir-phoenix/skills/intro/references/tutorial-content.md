@@ -177,11 +177,13 @@ The plugin uses **layered enforcement** — some things run automatically, some 
 
 | Hook | Trigger | What It Does |
 |------|---------|-------------|
-| Format check | Every `.ex`/`.exs` edit | Runs `mix format --check-formatted`, warns if unformatted |
-| Security reminder | Editing auth/session/password files | Outputs relevant Iron Laws to context |
-| Progress logging | Every file edit | Appends to `.claude/plans/{slug}/progress.md` |
-| Plan stop | Writing a plan.md | Reminds Claude to stop and present the plan |
-| PreCompact rules | Before context compaction | Re-injects Iron Laws and workflow state so rules survive compaction |
+| Format check | Every `.ex`/`.exs` edit | Runs `mix format --check-formatted`, warns via stderr + exit 2 |
+| Security reminder | Editing auth/session/password files | Outputs relevant Iron Laws via stderr + exit 2 |
+| Progress logging | Every file edit | Appends to `.claude/plans/{slug}/progress.md` (async) |
+| Plan stop | Writing a plan.md | Reminds Claude to stop and present the plan via stderr + exit 2 |
+| Failure hints | Bash command fails (mix compile/test/credo) | Injects debugging hints via `additionalContext` |
+| Iron Laws injection | Any subagent spawns | Injects all 21 Iron Laws into subagents via `additionalContext` |
+| PreCompact rules | Before context compaction | Re-injects workflow rules via JSON `additionalContext` |
 
 Format check **warns only** — it doesn't auto-fix (that would cause race conditions with the editor).
 
@@ -270,7 +272,8 @@ Being honest about the gaps:
 ### The Honest Summary
 
 ```text
-AUTOMATIC (hooks):     Format check, security reminders, progress logging
+AUTOMATIC (hooks):     Format check, security reminders, progress logging, failure hints,
+                       Iron Laws in subagents, PreCompact rule preservation
 BEHAVIORAL (Claude):   Iron Laws, skill loading, stop-and-explain
 ON-DEMAND (commands):  /phx:review (iron-law-judge), /phx:verify (compile/credo/dialyzer)
 STRENGTHENED BY:       /phx:init (injects rules into project CLAUDE.md)

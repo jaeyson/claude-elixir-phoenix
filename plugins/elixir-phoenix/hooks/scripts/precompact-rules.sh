@@ -2,9 +2,8 @@
 # PreCompact hook: Re-inject critical SKILL-SPECIFIC rules before compaction.
 # Iron Laws from CLAUDE.md survive compaction (system prompt), so we only
 # re-inject rules from loaded skills that live in conversation context.
-
-# Detect active workflow phase and output relevant rules.
-# /phx:full uses progress.md with **State**: field — skip STOP rules for it.
+#
+# PreCompact has no stdout context injection — use JSON additionalContext.
 
 FULL_MODE=false
 ACTIVE_PLAN=false
@@ -44,51 +43,59 @@ for dir in .claude/plans/*/; do
   break
 done
 
-# Output rules based on active phase
+# Build context message based on active phase
+CONTEXT=""
+
 if [ "$ACTIVE_PLAN" = true ] && [ "$FULL_MODE" = false ]; then
-  echo "PRESERVE ACROSS COMPACTION — active /phx:plan session:"
-  echo ""
+  CONTEXT="PRESERVE ACROSS COMPACTION — active /phx:plan session:"
+  CONTEXT+="\n"
   if [ -n "$PLAN_SLUG" ]; then
-    echo "- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
-    echo "- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
-    echo ""
+    CONTEXT+="\n- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
+    CONTEXT+="\n- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
+    CONTEXT+="\n"
   fi
-  echo "CRITICAL: After writing plan.md, you MUST STOP."
-  echo "Do NOT proceed to implementation or /phx:work."
-  echo "Present the plan summary and use AskUserQuestion with options:"
-  echo "  - Start in fresh session (recommended)"
-  echo "  - Get a briefing (/phx:brief)"
-  echo "  - Start here"
-  echo "  - Review the plan"
-  echo "  - Adjust the plan"
-  echo "Wait for user response. This is Iron Law #1 of /phx:plan."
+  CONTEXT+="\nCRITICAL: After writing plan.md, you MUST STOP."
+  CONTEXT+="\nDo NOT proceed to implementation or /phx:work."
+  CONTEXT+="\nPresent the plan summary and use AskUserQuestion with options:"
+  CONTEXT+="\n  - Start in fresh session (recommended)"
+  CONTEXT+="\n  - Get a briefing (/phx:brief)"
+  CONTEXT+="\n  - Start here"
+  CONTEXT+="\n  - Review the plan"
+  CONTEXT+="\n  - Adjust the plan"
+  CONTEXT+="\nWait for user response. This is Iron Law #1 of /phx:plan."
 fi
 
 if [ "$ACTIVE_WORK" = true ] && [ "$FULL_MODE" = false ]; then
-  echo "PRESERVE ACROSS COMPACTION — active /phx:work session:"
-  echo ""
+  CONTEXT="PRESERVE ACROSS COMPACTION — active /phx:work session:"
+  CONTEXT+="\n"
   if [ -n "$PLAN_SLUG" ]; then
-    echo "- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
-    echo "- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
-    echo ""
+    CONTEXT+="\n- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
+    CONTEXT+="\n- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
+    CONTEXT+="\n"
   fi
-  echo "- Verify after EVERY task (mix compile --warnings-as-errors)"
-  echo "- Max 3 retries per task, then mark BLOCKER"
-  echo "- Auto-continue between phases, but STOP when ALL phases done"
-  echo "- NEVER auto-start /phx:review — ask user what to do next"
-  echo "- Re-read plan.md for current state (checkboxes are the source of truth)"
+  CONTEXT+="\n- Verify after EVERY task (mix compile --warnings-as-errors)"
+  CONTEXT+="\n- Max 3 retries per task, then mark BLOCKER"
+  CONTEXT+="\n- Auto-continue between phases, but STOP when ALL phases done"
+  CONTEXT+="\n- NEVER auto-start /phx:review — ask user what to do next"
+  CONTEXT+="\n- Re-read plan.md for current state (checkboxes are the source of truth)"
 fi
 
 if [ "$FULL_MODE" = true ]; then
-  echo "PRESERVE ACROSS COMPACTION — /phx:full autonomous mode:"
-  echo ""
+  CONTEXT="PRESERVE ACROSS COMPACTION — /phx:full autonomous mode:"
+  CONTEXT+="\n"
   if [ -n "$PLAN_SLUG" ]; then
-    echo "- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
-    echo "- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
-    echo ""
+    CONTEXT+="\n- Active plan: ${PLAN_SLUG} — ${PLAN_INTENT}"
+    CONTEXT+="\n- Plan file: .claude/plans/${PLAN_SLUG}/plan.md"
+    CONTEXT+="\n"
   fi
-  echo "- Continue autonomous plan → work → review cycle"
-  echo "- Re-read progress.md for current state and cycle count"
-  echo "- Re-read plan.md for task checkboxes"
-  echo "- Max cycles, retries, and blocker limits still apply"
+  CONTEXT+="\n- Continue autonomous plan → work → review cycle"
+  CONTEXT+="\n- Re-read progress.md for current state and cycle count"
+  CONTEXT+="\n- Re-read plan.md for task checkboxes"
+  CONTEXT+="\n- Max cycles, retries, and blocker limits still apply"
+fi
+
+# Output as JSON with additionalContext if there's anything to preserve
+if [ -n "$CONTEXT" ]; then
+  # Use jq to safely encode the context string with newlines
+  printf '%b' "$CONTEXT" | jq -Rs '{hookSpecificOutput: {hookEventName: "PreCompact", additionalContext: .}}'
 fi
