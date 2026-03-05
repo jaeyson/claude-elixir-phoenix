@@ -1,5 +1,8 @@
 # Mix Task Patterns
 
+> **Official docs**: <https://hexdocs.pm/mix/Mix.Task.html>
+> **Mix guides**: <https://github.com/elixir-lang/elixir/tree/main/lib/mix/lib/mix>
+
 ## Module Naming Convention
 
 Mix task module names map directly to the CLI command:

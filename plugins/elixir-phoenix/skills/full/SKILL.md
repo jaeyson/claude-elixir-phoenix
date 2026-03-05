@@ -97,6 +97,14 @@ For fully autonomous execution with Ralph Wiggum Loop:
 /ralph-loop:ralph-loop "/phx:full {feature}" --completion-promise "DONE" --max-iterations 50
 ```
 
+## Iron Laws
+
+1. **NEVER skip verification** — Every task must pass `mix compile --warnings-as-errors` + `mix test` before moving to the next. Skipping compounds errors across tasks
+2. **Respect cycle limits** — When `--max-cycles` is exhausted, STOP with INCOMPLETE status. Do not continue indefinitely hoping the next fix works
+3. **One state transition at a time** — Follow the state machine strictly. Never jump from PLANNING to REVIEWING — each state produces artifacts the next state needs
+4. **Discover before deciding** — Always run DISCOVERING phase to assess complexity. Skipping it for "simple" features leads to underplanned implementations
+5. **Agent output is findings, not fixes** — Review agents report issues. Only the WORKING state makes code changes
+
 ## References
 
 - `references/execution-steps.md` — Detailed step-by-step execution

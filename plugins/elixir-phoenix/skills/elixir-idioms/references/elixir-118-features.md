@@ -1,5 +1,8 @@
 # Elixir 1.18 Features Reference
 
+> **Official changelog**: <https://github.com/elixir-lang/elixir/blob/main/CHANGELOG.md>
+> **HexDocs**: <https://hexdocs.pm/elixir/> — Use `hexdocs-fetcher` for latest API docs.
+
 ## Duration Module (Elixir 1.18+)
 
 Native duration representation without external dependencies.

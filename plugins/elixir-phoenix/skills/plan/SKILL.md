@@ -1,6 +1,6 @@
 ---
 name: phx:plan
-description: Plan an Elixir/Phoenix feature with comprehensive research. Use for any multi-file feature, new context, or change that benefits from upfront design. Spawns specialist agents for architecture, Ecto schema, and security analysis. Outputs structured plan with checkboxes for /phx:work execution.
+description: Plan an Elixir/Phoenix feature with comprehensive research, or enhance an existing plan with --existing flag. Use for any multi-file feature, new context, or change that benefits from upfront design. Spawns specialist agents for architecture, Ecto schema, and security analysis. Outputs structured plan with checkboxes for /phx:work execution. Also accepts review output files to create follow-up plans from findings.
 argument-hint: <feature description OR path to review/plan file>
 disable-model-invocation: true
 ---

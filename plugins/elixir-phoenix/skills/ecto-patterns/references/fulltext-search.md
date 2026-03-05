@@ -1,98 +1,59 @@
-# PostgreSQL Full-Text Search Reference
+# PostgreSQL Full-Text Search with Ecto
 
-Native full-text search without external dependencies. Suitable for most content search needs.
+Native full-text search without external dependencies. Based on
+[Search is Not Magic with PostgreSQL](https://www.codecon.sk/search-is-not-magic-with-postgresql).
 
-## Migration Setup
+## Strategy Decision Tree
+
+| Need | Strategy | Extension |
+|------|----------|-----------|
+| Exact/weighted text search | Full-text search (tsvector) | Built-in |
+| Typo tolerance / fuzzy | Trigram similarity (pg_trgm) | `pg_trgm` |
+| Semantic / AI search | Vector search (pgvector) | `pgvector` |
+| All of the above | Hybrid with RRF | Multiple |
+
+## 1. Full-Text Search (tsvector/tsquery)
+
+### Migration — Generated Column (Preferred, PostgreSQL 12+)
 
 ```elixir
-defmodule MyApp.Repo.Migrations.AddFullTextSearchToArticles do
-  use Ecto.Migration
+def up do
+  execute """
+  ALTER TABLE articles
+    ADD COLUMN searchable tsvector
+    GENERATED ALWAYS AS (
+      setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+      setweight(to_tsvector('english', coalesce(body, '')), 'B')
+    ) STORED;
+  """
 
-  def up do
-    # Add tsvector column
-    alter table(:articles) do
-      add :search_vector, :tsvector
-    end
+  create index(:articles, [:searchable], using: :gin)
+end
 
-    # GIN index for fast searches
-    create index(:articles, [:search_vector], using: :gin)
-
-    # Function to extract searchable text
-    execute """
-    CREATE OR REPLACE FUNCTION articles_search_vector(title text, body text)
-    RETURNS tsvector AS $$
-    BEGIN
-      RETURN
-        setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
-        setweight(to_tsvector('english', coalesce(body, '')), 'B');
-    END;
-    $$ LANGUAGE plpgsql IMMUTABLE;
-    """
-
-    # Trigger to auto-update search_vector
-    execute """
-    CREATE OR REPLACE FUNCTION articles_search_vector_trigger()
-    RETURNS trigger AS $$
-    BEGIN
-      NEW.search_vector := articles_search_vector(NEW.title, NEW.body);
-      RETURN NEW;
-    END;
-    $$ LANGUAGE plpgsql;
-    """
-
-    execute """
-    CREATE TRIGGER articles_search_vector_update
-    BEFORE INSERT OR UPDATE ON articles
-    FOR EACH ROW EXECUTE FUNCTION articles_search_vector_trigger();
-    """
-
-    # Backfill existing records
-    execute """
-    UPDATE articles SET search_vector = articles_search_vector(title, body);
-    """
-  end
-
-  def down do
-    execute "DROP TRIGGER IF EXISTS articles_search_vector_update ON articles"
-    execute "DROP FUNCTION IF EXISTS articles_search_vector_trigger()"
-    execute "DROP FUNCTION IF EXISTS articles_search_vector(text, text)"
-
-    alter table(:articles) do
-      remove :search_vector
-    end
+def down do
+  alter table(:articles) do
+    remove :searchable
   end
 end
 ```
 
-## Schema
+Generated columns auto-update on INSERT/UPDATE — no triggers needed.
+
+**When to use triggers instead**: When the tsvector depends on associated
+records (e.g., tags from a join table). Generated columns can only reference
+columns in the same row.
+
+### Basic Search Query
 
 ```elixir
-defmodule MyApp.Content.Article do
-  use Ecto.Schema
-
-  schema "articles" do
-    field :title, :string
-    field :body, :string
-    field :search_vector, :any, virtual: true  # Not loaded by default
-
-    timestamps()
-  end
-end
-```
-
-## Query with Search
-
-### Basic Search
-
-```elixir
-def search_articles(query_string) when is_binary(query_string) do
+def search_articles(query_string) do
   from(a in Article,
     where: fragment(
-      "search_vector @@ websearch_to_tsquery('english', ?)",
+      "searchable @@ websearch_to_tsquery('english', ?)",
       ^query_string
     ),
     order_by: [desc: fragment(
-      "ts_rank_cd(search_vector, websearch_to_tsquery('english', ?), 32)",
+      "ts_rank_cd(searchable, websearch_to_tsquery('english', ?), 32)",
       ^query_string
     )]
   )
@@ -100,7 +61,7 @@ def search_articles(query_string) when is_binary(query_string) do
 end
 ```
 
-### Search with Pagination and Highlights
+### Search with Highlights and Pagination
 
 ```elixir
 def search_articles(query_string, opts \\ []) do
@@ -108,25 +69,17 @@ def search_articles(query_string, opts \\ []) do
   per_page = Keyword.get(opts, :per_page, 20)
 
   from(a in Article,
-    where: fragment(
-      "search_vector @@ websearch_to_tsquery('english', ?)",
-      ^query_string
-    ),
+    where: fragment("searchable @@ websearch_to_tsquery('english', ?)", ^query_string),
     select: %{
       id: a.id,
       title: a.title,
-      # Highlight matching terms
       headline: fragment(
         "ts_headline('english', ?, websearch_to_tsquery('english', ?), 'StartSel=<mark>, StopSel=</mark>')",
-        a.body,
-        ^query_string
+        a.body, ^query_string
       ),
-      rank: fragment(
-        "ts_rank_cd(search_vector, websearch_to_tsquery('english', ?), 32)",
-        ^query_string
-      )
+      rank: fragment("ts_rank_cd(searchable, websearch_to_tsquery('english', ?), 32)", ^query_string)
     },
-    order_by: [desc: fragment("ts_rank_cd(search_vector, websearch_to_tsquery('english', ?), 32)", ^query_string)],
+    order_by: [desc: fragment("ts_rank_cd(searchable, websearch_to_tsquery('english', ?), 32)", ^query_string)],
     offset: ^((page - 1) * per_page),
     limit: ^per_page
   )
@@ -134,84 +87,120 @@ def search_articles(query_string, opts \\ []) do
 end
 ```
 
-## websearch_to_tsquery Syntax
+### Multi-Language Support
 
-Users can use Google-style search syntax:
+```elixir
+# Dynamic language via regconfig casting
+from(a in Article,
+  where: fragment(
+    "to_tsvector(?::text::regconfig, ?) @@ to_tsquery(?::text::regconfig, ?)",
+    ^language, a.body, ^language, ^query
+  )
+)
+```
+
+### websearch_to_tsquery Syntax (Google-style)
 
 | Input | Matches |
 |-------|---------|
-| `elixir phoenix` | Articles with both words |
-| `"exact phrase"` | Articles with exact phrase |
-| `elixir OR phoenix` | Articles with either word |
-| `-deprecated` | Excludes articles with "deprecated" |
-| `elixir -deprecated` | Elixir articles without "deprecated" |
+| `elixir phoenix` | Both words |
+| `"exact phrase"` | Exact phrase |
+| `elixir OR phoenix` | Either word |
+| `-deprecated` | Excludes word |
 
-## Weight Meanings
+### Weight Meanings
 
-| Weight | Typical Use | Boost Factor |
-|--------|-------------|--------------|
-| A | Title, most important | Highest |
-| B | Subtitles, headings | High |
-| C | Body text | Medium |
-| D | Metadata, tags | Lower |
+| Weight | Use | Boost |
+|--------|-----|-------|
+| A | Title | Highest |
+| B | Subtitles | High |
+| C | Body | Medium |
+| D | Metadata | Lower |
 
-## Performance Considerations
+## 2. Trigram Similarity (pg_trgm) — Fuzzy/Typo Tolerance
 
 ```elixir
-# ALWAYS use GIN index
-create index(:articles, [:search_vector], using: :gin)
+# Migration
+execute "CREATE EXTENSION IF NOT EXISTS pg_trgm"
+execute "CREATE INDEX products_name_trgm_idx ON products USING gin(name gin_trgm_ops)"
 
-# For large tables, consider partial index
-create index(:articles, [:search_vector],
-  using: :gin,
-  where: "published_at IS NOT NULL"
+# Query
+from(p in Product,
+  where: fragment("similarity(?, ?) > ?", p.name, ^term, 0.3),
+  order_by: [desc: fragment("similarity(?, ?)", p.name, ^term)]
 )
+```
 
-# Monitor index size
-# SELECT pg_size_pretty(pg_relation_size('articles_search_vector_index'));
+Trigrams compare 3-character groups — handles typos, misspellings, partial matches.
+Threshold 0.3 is a good default; tune based on your data.
+
+## 3. Hybrid Search with RRF (Reciprocal Rank Fusion)
+
+Combine multiple search strategies by normalizing ranks:
+
+```elixir
+# Each strategy returns %{id, rank} with: 1 / (60 + distance)
+similarity_results = search_by_trigram(term)
+fulltext_results = search_by_tsvector(term)
+
+# Merge with deduplication
+(similarity_results ++ fulltext_results)
+|> Enum.group_by(& &1.id)
+|> Enum.map(fn {id, ranks} -> {id, Enum.sum(Enum.map(ranks, & &1.rank))} end)
+|> Enum.sort_by(&elem(&1, 1), :desc)
+```
+
+### Multi-Word Query Normalization
+
+```elixir
+defp normalize_query(text) do
+  text
+  |> String.trim()
+  |> String.downcase()
+  |> String.replace(~r/\s+/, " ")
+  |> String.split(" ")
+  |> Enum.join(" & ")
+end
+```
+
+## Performance
+
+```elixir
+# ALWAYS use GIN index for tsvector
+create index(:articles, [:searchable], using: :gin)
+
+# Partial index for large tables
+create index(:articles, [:searchable], using: :gin, where: "published_at IS NOT NULL")
+
+# GIN indexes only used with LIMIT — always paginate
 ```
 
 ## Anti-patterns
 
 ```elixir
-# WRONG: Computing tsvector at query time (slow!)
+# WRONG: Computing tsvector at query time (slow, no index!)
 from(a in Article,
-  where: fragment(
-    "to_tsvector('english', title || ' ' || body) @@ to_tsquery(?)",
-    ^query
-  )
+  where: fragment("to_tsvector('english', title || ' ' || body) @@ to_tsquery(?)", ^q)
 )
 
-# RIGHT: Pre-computed tsvector column with index
-from(a in Article,
-  where: fragment(
-    "search_vector @@ websearch_to_tsquery('english', ?)",
-    ^query
-  )
-)
-
-# WRONG: Using LIKE for search (no ranking, slow)
+# WRONG: Using LIKE for search (no ranking, no stemming)
 from(a in Article, where: ilike(a.title, ^"%#{query}%"))
 
-# RIGHT: Full-text search with ranking
-# (as shown above)
+# WRONG: Using triggers when generated columns suffice
+# Generated columns are simpler and auto-maintained
 
-# WRONG: Forgetting to sanitize search input
-# websearch_to_tsquery handles this, but plainto_tsquery doesn't
+# WRONG: Assuming PG can't do fuzzy search
+# pg_trgm handles typo tolerance natively — no need for Elasticsearch just for fuzzy
 ```
 
 ## When to Use External Search
 
-PostgreSQL FTS is great for:
+PostgreSQL handles most use cases (100K-10M docs). Consider Meilisearch/Elasticsearch for:
 
-- 100K-10M documents
-- Simple search requirements
-- Budget constraints
-
-Consider Elasticsearch/Algolia/Meilisearch for:
-
-- Typo tolerance (fuzzy matching)
-- Faceted search with complex filters
-- Multi-language with mixed alphabets
+- Faceted search with complex filters across many dimensions
+- Multi-language with mixed alphabets in same field
 - Real-time indexing of 10M+ documents
-- Advanced analytics on searches
+- Advanced search analytics
+
+**Further reading**: [Search is Not Magic with PostgreSQL](https://www.codecon.sk/search-is-not-magic-with-postgresql)
+— covers trigrams, full-text, vector search, and hybrid patterns with Ecto examples.

@@ -92,7 +92,4 @@ Phoenix 1.8 uses esbuild + tailwind (no Node.js required):
 For detailed patterns, see:
 
 - `references/docker-config.md` - Multi-stage Dockerfile, best practices
-- `references/kubernetes-config.md` - Deployments, probes, BEAM-specific
 - `references/flyio-config.md` - fly.toml, clustering, commands
-- `references/observability.md` - Telemetry, logging, Sentry, spans
-- `references/ci-templates.md` - GitHub Actions workflows, Claude Code integration

@@ -1,6 +1,6 @@
 ---
 name: phx:audit
-description: Holistic project health audit using 5 parallel specialist subagents. Analyzes architecture, performance, security, test quality, and dependencies. Use quarterly for health checks, before major releases, after large refactors, or when onboarding new team members to understand codebase health. Also use when the user asks about overall project quality.
+description: Project health audit across 5 areas (architecture, performance, security, tests, dependencies) using parallel specialist agents. Use quarterly, before major releases, after large refactors, or when onboarding. Also use when the user mentions "project health", "code quality overview", "how healthy is this codebase", or any request for holistic assessment.
 argument-hint: [--quick|--full|--focus=area|--since=commit]
 ---
 
@@ -94,6 +94,12 @@ Each category scores 0-100. See `references/scoring-methodology.md`.
 
 Write to `.claude/audit/summaries/project-health-{date}.md`.
 
+## Output Format
+
+Report includes: Executive summary with health score (A-F, numeric/100),
+per-category score table (Architecture, Performance, Security, Tests, Dependencies),
+critical issues, top recommendations, and action plan (Immediate/Short-term/Long-term).
+
 ## Quick Mode (`--quick`)
 
 Only run essential checks (~2-3 minutes):
@@ -132,50 +138,6 @@ git diff --name-only <commit>...HEAD
 ```
 
 Combines with other flags: `/phx:audit --since HEAD~5 --focus=security`
-
-## Output Format
-
-```markdown
-# Project Health Audit: {project_name}
-
-**Generated**: {date}
-**Mode**: full | quick | focus={area}
-
-## Executive Summary
-
-### Health Score: {A-F} ({numeric}/100)
-
-| Category | Score | Status |
-|----------|-------|--------|
-| Architecture | 85/100 | Good |
-| Performance | 70/100 | Needs Attention |
-| Security | 95/100 | Excellent |
-| Test Quality | 60/100 | Needs Work |
-| Dependencies | 90/100 | Good |
-
-### Critical Issues (Must Address)
-1. {issue}
-2. {issue}
-
-### Top Recommendations
-1. {recommendation}
-2. {recommendation}
-
-## Detailed Findings
-
-[Per-category sections from subagents]
-
-## Action Plan
-
-### Immediate (This Sprint)
-- [ ] {critical fix}
-
-### Short-term (Next 2 Sprints)
-- [ ] {improvement}
-
-### Long-term (Backlog)
-- [ ] {nice-to-have}
-```
 
 ## Relationship to Other Commands
 

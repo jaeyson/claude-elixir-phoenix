@@ -1,5 +1,8 @@
 # OTP Patterns Reference
 
+> **Official docs**: <https://hexdocs.pm/elixir/GenServer.html> | <https://hexdocs.pm/elixir/Supervisor.html>
+> **Elixir guides**: <https://hexdocs.pm/elixir/introduction.html> (see OTP section)
+
 ## Contents
 
 - [Core Rule](#core-rule-no-process-without-a-runtime-reason)

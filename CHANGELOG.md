@@ -5,6 +5,35 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **fulltext-search.md** — Rewritten with generated columns (preferred over triggers),
+  trigram similarity (pg_trgm), hybrid search with RRF, multi-language support.
+  Based on [Search is Not Magic with PostgreSQL](https://www.codecon.sk/search-is-not-magic-with-postgresql)
+- **oban-pro-basics.md** — Slimmed to essentials + official HexDocs links.
+  Prevents stale static content; directs to upstream for latest API
+- **5 skill descriptions improved** — `plan` (--existing mode), `research` (--library flag),
+  `hexdocs-fetcher` (wrapper purpose), `examples` (workflow demos), `audit` (5 specific areas)
+- **Official doc links added** to `otp-patterns.md`, `mix-tasks.md`, `elixir-118-features.md`,
+  `oban-pro-basics.md`, `testing-patterns.md` — enables fresh doc fetching
+
+### Fixed
+
+- **`full` skill** — Added missing Iron Laws section (5 rules: verification, cycle limits,
+  state transitions, discover-first, agent output boundaries)
+- **`audit` skill** — Trimmed from 192 to 154 lines (was over 185 hard limit)
+- **`review` skill** — Trimmed from 190 to 169 lines (was over 185 hard limit)
+- **`boundaries` skill** — Trimmed from 170 to 145 lines (was over 150 hard limit)
+- **`compute-metrics.py`** — Fixed datetime.min tz-naive comparison crash in trends,
+  fixed fromisoformat returning naive datetime for date-only strings
+
+### Removed
+
+- **3 unfinished deploy references** — `ci-templates.md`, `kubernetes-config.md`,
+  `observability.md` (undocumented, incomplete, not double-checked)
+
 ## [2.1.0] - 2026-03-05
 
 ### Added

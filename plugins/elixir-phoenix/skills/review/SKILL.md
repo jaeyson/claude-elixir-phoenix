@@ -50,19 +50,11 @@ planning decisions, rationale, and handoff notes. Include relevant
 decisions in each agent's prompt so they have context about WHY
 code was written a certain way. This eliminates session archaeology.
 
-### Step 1c: Check Prior Review Output
+### Step 1c: Check Prior Reviews
 
-Before spawning agents, check for existing review files:
-
-```bash
-ls .claude/plans/${SLUG}/reviews/ 2>/dev/null
-ls .claude/plans/${SLUG}/summaries/review-consolidated.md 2>/dev/null
-```
-
-If prior reviews exist, read the consolidated summary and include
-it in each agent's prompt as "PRIOR FINDINGS" context with the
-instruction: "Focus on NEW issues. Mark still-present issues as
-PERSISTENT. Do NOT re-report issues that have been fixed."
+If `.claude/plans/${SLUG}/reviews/` has prior output, include consolidated
+summary in each agent's prompt as "PRIOR FINDINGS" with instruction:
+"Focus on NEW issues. Mark still-present issues as PERSISTENT."
 
 ### Step 2: Spawn Review Agents (MANDATORY)
 
@@ -103,25 +95,12 @@ Zero agents spawned = skill failure.
 ### Step 3: Collect and Compress Findings
 
 Wait for ALL agents to FULLY complete using TaskOutput with
-`block: true` for each agent. **Do NOT report status until
-every single agent has completed** — ignore intermediate
-completion notifications.
+`block: true`. **Do NOT report status until every agent completes.**
 
-**Verification-runner fallback**: If the verification-runner
-agent fails or times out, run verification directly. Scope
-format checks to changed files only:
+**Verification-runner fallback**: If it fails/times out, run directly:
+`mix compile --warnings-as-errors && mix format --check-formatted $(git diff --name-only HEAD~5 | grep '\.exs\?$' | tr '\n' ' ') && mix credo --strict && mix test`
 
-```bash
-mix compile --warnings-as-errors
-CHANGED=$(git diff --name-only HEAD~5 | grep '\.exs\?$' | tr '\n' ' ')
-if [ -n "$CHANGED" ]; then mix format --check-formatted $CHANGED; fi
-mix credo --strict && mix test
-```
-
-Do NOT leave verification incomplete.
-
-**For full reviews (5 agents):** After all agents complete,
-spawn `elixir-phoenix:context-supervisor` to compress output:
+**For full reviews (5 agents):** Spawn `elixir-phoenix:context-supervisor` to compress output:
 
 ```
 Prompt: "Compress review agent output.

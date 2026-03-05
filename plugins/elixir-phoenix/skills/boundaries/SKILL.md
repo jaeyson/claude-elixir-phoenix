@@ -122,37 +122,12 @@ mix xref graph --format cycles
 
 ## Red Flags to Detect
 
-### Direct Repo Access from Web Layer
-
-```bash
-grep -r "Repo\." lib/my_app_web/ --include="*.ex"
-```
-
-If found: Move to context module.
-
-### Schema with Queries
-
-```bash
-grep -r "import Ecto.Query" lib/my_app/**/schemas/ --include="*.ex"
-```
-
-If found: Move queries to context.
-
-### Cross-Context Schema Import
-
-```bash
-grep -r "alias MyApp.OtherContext.Schema" lib/my_app/my_context/
-```
-
-If found: Call other context's API instead.
-
-### Business Logic in LiveView
-
-```bash
-grep -r "Repo\.\|Ecto\.Multi" lib/my_app_web/live/ --include="*.ex"
-```
-
-If found: Extract to context function.
+| Issue | Detection Command | Fix |
+|-------|------------------|-----|
+| Repo in web layer | `grep -r "Repo\." lib/my_app_web/` | Move to context |
+| Schema with queries | `grep -r "import Ecto.Query" lib/my_app/**/schemas/` | Move queries to context |
+| Cross-context schema import | `grep -r "alias MyApp.Other.Schema" lib/my_app/ctx/` | Call context API |
+| Business logic in LiveView | `grep -r "Repo\.\|Ecto\.Multi" lib/my_app_web/live/` | Extract to context |
 
 ## Boundary Verification Process
 

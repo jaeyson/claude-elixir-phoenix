@@ -1,5 +1,8 @@
 # Oban Testing Patterns Reference
 
+> **Official docs**: <https://hexdocs.pm/oban/testing.html>
+> **Oban Pro testing**: <https://hexdocs.pm/oban_pro/testing.html>
+
 ## Configuration
 
 ```elixir
