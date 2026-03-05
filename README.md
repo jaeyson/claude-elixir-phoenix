@@ -585,6 +585,10 @@ This plugin was built with insights from these articles, repositories, and tools
 
 ### Articles
 
+- <https://www.codecon.sk/search-is-not-magic-with-postgresql>
+- <https://peterullrich.com/complete-guide-to-full-text-search-with-postgres-and-ecto>
+- <https://peterullrich.com/efficient-name-search-with-postgres-and-ecto>
+- <https://elixirmerge.com/p/exploring-postgresql-search-techniques-with-elixir-and-ecto>
 - <https://tidewave.ai/blog/the-future-of-coding-agents-is-vertical-integration>
 - <https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents>
 - <https://openai.com/index/harness-engineering/>
