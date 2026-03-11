@@ -182,3 +182,4 @@ If pending plans exist, inform the user. Do NOT auto-start.
 - `references/resume-strategies.md` -- Resume modes and state persistence
 - `references/file-formats.md` -- Plan and progress file formats
 - `references/error-recovery.md` -- Error handling and blockers
+- `references/harness-patterns.md` -- Critic-refiner pattern for debugging loops

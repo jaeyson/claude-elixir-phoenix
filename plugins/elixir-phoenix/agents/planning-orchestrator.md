@@ -57,6 +57,12 @@ Tidewave. Skip if unavailable — agents fall back to static analysis.
    Pass route list to phoenix-patterns-analyst.
 3. `mcp__tidewave__get_logs level: :warning` → include in research context
 
+### Phase 1c: Research Cache Reuse
+
+Before spawning web/hex agents, check `.claude/research/` and
+`.claude/plans/*/research/` for matching research <48h old.
+If found, skip the agent and reuse cached findings.
+
 ### Phase 2: Spawn Research Agents (Parallel)
 
 Spawn agents selectively based on what's needed:
@@ -68,8 +74,10 @@ Always spawn:
 Spawn if evaluating NEW libraries (not in mix.exs):
 +-- hex-library-researcher -> .claude/plans/{slug}/research/libraries.md
 
-Spawn if unfamiliar tech or need community input:
+Spawn if unfamiliar tech or need community input (haiku — cheap):
 +-- web-researcher -> .claude/plans/{slug}/research/research-{topic}.md
+    Pass focused query or URLs, NEVER raw description. Multiple topics
+    → multiple parallel agents.
 
 Spawn if interactive/UI feature:
 +-- liveview-architect -> .claude/plans/{slug}/research/liveview-decision.md
@@ -92,18 +100,11 @@ Spawn if changing function signatures or refactoring:
 
 **CRITICAL: Agent output size rule:**
 
-When spawning research agents, include this instruction in EVERY prompt:
+Include in EVERY agent prompt:
 
-> Write your detailed analysis to the file specified (e.g.,
-> `.claude/plans/{slug}/research/codebase-patterns.md`).
-> Return ONLY a summary in your response -- max 500 words.
-> Include: key findings (bullet points), critical decisions,
-> file paths involved.
-> Do NOT return the full analysis text -- it floods the parent
-> context window.
-
-This prevents 3000-5000 word agent results from consuming
-planning context.
+> Write detailed analysis to the specified file path.
+> Return ONLY a 500-word summary: key findings (bullets),
+> critical decisions, file paths. Do NOT return full text.
 
 **Research quality rules:**
 

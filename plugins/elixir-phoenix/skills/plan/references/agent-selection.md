@@ -40,6 +40,8 @@
 
 ## When to Spawn web-researcher
 
+**Model**: haiku (cheap fetch worker — extraction, not reasoning)
+
 **Spawn when:**
 
 - Feature involves unfamiliar library/pattern
@@ -53,6 +55,13 @@
 - Standard CRUD feature
 - Well-known patterns (auth, pagination)
 - Codebase already has similar implementation
+
+**Spawn rules:**
+
+- Pass a focused 5-15 word query OR pre-searched URLs, NEVER raw text
+- If multiple web topics: spawn multiple agents in parallel (1 per topic)
+- Max 5 URLs per agent (diminishing returns beyond that)
+- Agent returns 500-800 word summary — synthesis happens in orchestrator
 
 ## When to Spawn call-tracer
 

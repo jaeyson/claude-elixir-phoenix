@@ -3,7 +3,8 @@
 # Iron Laws from CLAUDE.md survive compaction (system prompt), so we only
 # re-inject rules from loaded skills that live in conversation context.
 #
-# PreCompact has no stdout context injection — use JSON additionalContext.
+# PreCompact hookSpecificOutput only supports top-level fields.
+# Use "systemMessage" to inject context that survives compaction.
 
 FULL_MODE=false
 ACTIVE_PLAN=false
@@ -94,8 +95,7 @@ if [ "$FULL_MODE" = true ]; then
   CONTEXT+="\n- Max cycles, retries, and blocker limits still apply"
 fi
 
-# Output as JSON with additionalContext if there's anything to preserve
+# Output as JSON with systemMessage (hookSpecificOutput doesn't support PreCompact hookEventName)
 if [ -n "$CONTEXT" ]; then
-  # Use jq to safely encode the context string with newlines
-  printf '%b' "$CONTEXT" | jq -Rs '{hookSpecificOutput: {hookEventName: "PreCompact", additionalContext: .}}'
+  printf '%b' "$CONTEXT" | jq -Rs '{systemMessage: .}'
 fi

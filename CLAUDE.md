@@ -200,8 +200,8 @@ Defined in `hooks/hooks.json`:
 ```json
 {
   "hooks": {
-    "PostToolUse": [...],          // Format + security + progress + plan STOP
-    "PostToolUseFailure": [...],   // Elixir failure hints for mix commands
+    "PostToolUse": [...],          // Format + Iron Law verify + security + progress + plan STOP
+    "PostToolUseFailure": [...],   // Elixir failure hints + error critic for mix commands
     "SubagentStart": [...],        // Iron Laws injection into all subagents
     "SessionStart": [...],         // Setup dirs + Tidewave + resume detection
     "PreCompact": [...],           // Re-inject workflow rules before compaction
@@ -212,11 +212,13 @@ Defined in `hooks/hooks.json`:
 
 **Current hooks:**
 
-- `PostToolUse` (Edit|Write): Auto `mix format --check-formatted`, security Iron Laws for auth files,
+- `PostToolUse` (Edit|Write): Auto `mix format --check-formatted`, **programmatic Iron Law verification**
+  (scans code content for violations), security Iron Laws for auth files,
   async progress logging, plan STOP reminder on plan.md write (all use exit 2 + stderr)
-- `PostToolUseFailure` (Bash): Elixir-specific debugging hints when mix compile/test/credo/ecto fails, injected via `additionalContext`
+- `PostToolUseFailure` (Bash): Elixir-specific debugging hints when mix compile/test/credo/ecto fails,
+  **error critic** that detects repeated failures and escalates to structured analysis (both via `additionalContext`)
 - `SubagentStart`: Inject all Iron Laws into every spawned subagent via `additionalContext` (addresses zero skill auto-loading gap)
-- `PreCompact`: Re-inject workflow rules (plan/work/full) before compaction via JSON `additionalContext` (stdout has no context injection on PreCompact)
+- `PreCompact`: Re-inject workflow rules (plan/work/full) before compaction via JSON `systemMessage`
 - `SessionStart` (all): Setup `.claude/` directories + Tidewave detection
 - `SessionStart` (startup|resume only): Scratchpad check + resume workflow detection + branch freshness + workflow hints
 - `Stop`: Warn if plans have unchecked tasks
@@ -224,7 +226,7 @@ Defined in `hooks/hooks.json`:
 **Hook output patterns (important for contributors):**
 
 - `PostToolUse` stdout is **verbose-mode only** — use `exit 2` + stderr to feed messages to Claude
-- `PreCompact` has **no stdout context injection** — use JSON `hookSpecificOutput.additionalContext`
+- `PreCompact` has **no stdout context injection** — use JSON `systemMessage`
 - `SessionStart` stdout IS added to Claude's context (one of two exceptions along with `UserPromptSubmit`)
 - `SubagentStart` uses `hookSpecificOutput.additionalContext` to inject context into subagents
 - `PostToolUseFailure` uses `hookSpecificOutput.additionalContext` for debugging hints
@@ -407,7 +409,16 @@ When the user's FIRST message describes work without specifying a `/phx:` comman
 
 ### Debugging Loop Detection
 
-When 3+ consecutive Bash commands are `mix compile` or `mix test` with failures, suggest: "Looks like a debugging loop. Want me to run `/phx:investigate` for structured analysis?"
+The `error-critic.sh` hook automatically detects repeated mix failures and
+escalates from generic hints (attempt 1) to structured critic analysis
+(attempt 3+). It tracks failure count per command and consolidates error
+history. This implements the Critic→Refiner pattern from AutoHarness
+(Lou et al., 2026): structured error consolidation before retry prevents
+debugging loops more effectively than unstructured retry.
+
+If the hook hasn't triggered (e.g., non-mix failures), manually detect:
+when 3+ consecutive Bash commands are `mix compile` or `mix test` with failures,
+suggest: "Looks like a debugging loop. Want me to run `/phx:investigate` for structured analysis?"
 
 ### LiveView Bug Detection via Tidewave Context
 

@@ -7,6 +7,59 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **PreCompact hook (`precompact-rules.sh`)** — Fixed JSON validation failure
+  that broke context preservation across compaction. Claude Code's schema
+  validation rejects `hookSpecificOutput` with `hookEventName: "PreCompact"`
+  (only PreToolUse/PostToolUse/UserPromptSubmit are valid). Switched to
+  top-level `systemMessage` field which is schema-valid for all hook types
+
+### Changed
+
+- **web-researcher agent** — Full rewrite as haiku fetch worker (was sonnet).
+  Source-specific WebFetch extraction prompts (ElixirForum, HexDocs, GitHub,
+  blogs) reduce token usage 30-50% per fetch. Parallel WebFetch calls in
+  single response for 3-5x speedup. Removed unused tools (Read, Grep, Glob)
+  and elixir-idioms skill preload (caused safety scanner false positives).
+  Agent is now a focused data collector; synthesis stays with the caller
+- **research skill (`/phx:research`)** — Added query decomposition (extracts
+  2-4 focused queries from long user input instead of passing raw text to
+  WebSearch), pre-flight cache check, and parallel worker spawning (1-3
+  web-researcher agents per topic cluster). New Iron Law: never pass raw
+  user input as WebSearch query. Removes duplicate searching (skill searches
+  OR agent searches, not both)
+- **planning-orchestrator** — Updated web-researcher spawn guidance: pass
+  focused queries or pre-searched URLs, spawn multiple agents for multi-topic
+  research
+- **agent-selection reference** — Added web-researcher spawn rules (model,
+  URL limits, summary size, parallel spawning)
+- **research skill (`/phx:research`)** — Added Tidewave-first routing: when
+  topic is about an existing dependency, uses `mcp__tidewave__get_docs`
+  (version-exact, zero web tokens) before falling through to web search
+- **planning-orchestrator** — Added Phase 1c research cache reuse: checks
+  `.claude/research/` and `.claude/plans/*/research/` for existing research
+  before spawning web-researcher agents (prevents duplicate web research
+  across planning sessions)
+- **intro tutorial** — Updated `/phx:research` description in cheat sheet
+  to reflect parallel workers and Tidewave-first routing
+
+### Added
+
+- **PostToolUse iron-law-verifier.sh hook** — Programmatic code-content scanning for Iron Law
+  violations after Edit/Write. Catches String.to_atom, :float for money, raw/1 with variables,
+  implicit cross joins, bare GenServer.start_link, and assign_new misuse. Inspired by
+  AutoHarness (Lou et al., 2026) "harness-as-action-verifier" pattern: code validates LLM
+  output and feeds specific violation + line number back for targeted retry
+- **PostToolUseFailure error-critic.sh hook** — Detects repeated mix command failures and
+  escalates from generic hints (attempt 1) to structured critic analysis (attempt 3+).
+  Tracks failure count per command, consolidates error history, and suggests /phx:investigate.
+  Implements the Critic→Refiner pattern from AutoHarness: structured error consolidation
+  before retry prevents debugging loops
+- **harness-patterns.md reference** — New work skill reference documenting the critic-refiner
+  pattern for error recovery, action verification hook architecture, and anti-patterns for
+  unstructured retry loops
+
 ### Changed
 
 - **fulltext-search.md** — Rewritten with generated columns (preferred over triggers),

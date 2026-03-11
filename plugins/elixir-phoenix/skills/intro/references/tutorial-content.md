@@ -183,7 +183,7 @@ The plugin uses **layered enforcement** — some things run automatically, some 
 | Plan stop | Writing a plan.md | Reminds Claude to stop and present the plan via stderr + exit 2 |
 | Failure hints | Bash command fails (mix compile/test/credo) | Injects debugging hints via `additionalContext` |
 | Iron Laws injection | Any subagent spawns | Injects all 21 Iron Laws into subagents via `additionalContext` |
-| PreCompact rules | Before context compaction | Re-injects workflow rules via JSON `additionalContext` |
+| PreCompact rules | Before context compaction | Re-injects workflow rules via JSON `systemMessage` |
 
 Format check **warns only** — it doesn't auto-fix (that would cause race conditions with the editor).
 
@@ -307,7 +307,7 @@ The plugin works best when all layers are active: `/phx:init` for persistent rul
 | `/phx:full <feature>` | Autonomous plan-work-review cycle |
 | `/phx:investigate <bug>` | Structured bug investigation |
 | `/phx:verify` | Run all quality checks |
-| `/phx:research <topic>` | Research an Elixir topic |
+| `/phx:research <topic>` | Research with parallel workers, Tidewave-first |
 | `/phx:pr-review <PR#>` | Address PR review comments |
 
 **Analysis:**

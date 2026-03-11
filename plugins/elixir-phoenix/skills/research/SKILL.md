@@ -13,8 +13,7 @@ Research a topic by searching the web and fetching relevant sources efficiently.
 ```
 /phx:research Oban unique jobs best practices
 /phx:research LiveView file upload with progress
-/phx:research Ecto multi-tenancy patterns
-/phx:research Phoenix PubSub vs GenServer for real-time
+/phx:research --library permit
 ```
 
 ## Arguments
@@ -25,10 +24,11 @@ template).
 
 ## Iron Laws
 
-1. **Write output to file, never dump inline** — Research output can be 5-8KB; dumping inline floods the conversation and loses the reference for future sessions
-2. **Stop after research — never auto-transition** — Research informs decisions but the user must choose the next step; auto-invoking `/phx:plan` removes that agency
-3. **Prefer official sources over blog posts** — HexDocs and ElixirForum have version-specific context; blog posts may reference outdated APIs
-4. **One document per research question** — Multiple files for one topic fragment the findings and make them harder to reference later
+1. **Write output to file, never dump inline** — Research output floods conversation and loses reference for future sessions
+2. **Stop after research — never auto-transition** — User decides next step
+3. **Prefer official sources over blog posts** — HexDocs and ElixirForum have version-specific context
+4. **One document per research question** — No fragmented files
+5. **NEVER pass raw user input as WebSearch query** — Decompose first
 
 ## Library Evaluation Mode
 
@@ -43,78 +43,106 @@ about evaluating a Hex dependency (e.g., "should we use permit",
 
 ## Workflow
 
-### 1. Search for Sources
+### 0. Pre-flight Checks
 
-Search multiple places for: **$ARGUMENTS**
+**Cache check**: Check if `.claude/research/{topic-slug}.md` already
+exists. If recent (<24 hours): present existing summary, ask
+"Refresh or use existing?"
 
-```
-Priority sources:
-1. ElixirForum - community discussions, real-world experience
-2. HexDocs - official documentation
-3. GitHub - issues, discussions, code examples
-4. Blogs - fly.io/phoenix-files, dashbit.co, thoughtbot
-```
-
-Use `WebSearch` tool to find relevant URLs:
+**Tidewave shortcut**: If the topic is about an **existing dependency**
+(library already in `mix.exs`), prefer Tidewave over web search:
 
 ```
-WebSearch(query: "$ARGUMENTS site:elixirforum.com OR site:hexdocs.pm OR site:github.com")
+mcp__tidewave__get_docs(module: "LibraryModule")
 ```
 
-For domain-specific searches:
+This returns docs matching your exact `mix.lock` version — faster,
+more accurate, zero web tokens. Only fall through to web search if
+Tidewave is unavailable or the topic needs community discussion
+(gotchas, real-world patterns, comparisons).
+
+### 1. Query Decomposition (CRITICAL — before any search)
+
+**NEVER pass raw $ARGUMENTS into WebSearch.** Decompose first:
+
+- If `$ARGUMENTS` < 30 words and focused → use as single query
+- If `$ARGUMENTS` > 30 words or multi-topic → extract 2-4 queries
+
+Each query: max 10 words, targets ONE specific aspect.
+
+Example:
 
 ```
-# ElixirForum only
-WebSearch(query: "$ARGUMENTS", allowed_domains: ["elixirforum.com"])
-
-# HexDocs only
-WebSearch(query: "$ARGUMENTS", allowed_domains: ["hexdocs.pm"])
+Input: "detect files, export to md, feed database with embeddings,
+        use ReqLLM for OpenAI API..."
+Queries:
+  1. "Elixir PDF text extraction library hex"
+  2. "Ecto pgvector embeddings setup"
+  3. "ReqLLM OpenAI embeddings Elixir"
 ```
 
-### 2. Spawn web-researcher
+### 2. Parallel Web Search
 
-Use Task tool to spawn `web-researcher` agent:
+Search ALL decomposed queries in a SINGLE response (parallel):
 
 ```
-Task({
-  subagent_type: "web-researcher",
-  prompt: "Research: $ARGUMENTS\n\nFetch and analyze these sources: {urls from search}\n\nFocus on:\n- Code examples\n- Common patterns\n- Gotchas and warnings\n- Version compatibility",
-  run_in_background: false
-})
+WebSearch(query: "{query1} site:elixirforum.com OR site:hexdocs.pm OR site:github.com")
+WebSearch(query: "{query2} site:hexdocs.pm OR site:elixirforum.com")
 ```
 
-### 3. Output (File-First — NEVER Dump Inline)
+Deduplicate URLs across results. Discard clearly irrelevant hits.
 
-**ALWAYS write output to a file** — never dump research inline.
-One document per research question. No redundant summary/index files.
-Target size: ~5KB for library evaluations, ~8KB for topic research.
+### 3. Spawn Parallel Research Workers
 
-Create `.claude/research/{topic-slug}.md` with:
+Group URLs by topic cluster. Spawn **1-3 web-researcher agents
+in parallel** (one per topic cluster):
+
+```
+Agent(subagent_type: "web-researcher", prompt: """
+Research focus: {specific aspect from decomposed query}
+Fetch these URLs:
+- {url1}
+- {url2}
+- {url3}
+Extract: code examples, patterns, gotchas, version compatibility.
+Return 500-800 word summary.
+""", run_in_background: true)
+```
+
+Rules:
+
+- **1 topic cluster = 1 agent** (don't mix unrelated URLs)
+- **Max 5 URLs per agent** (diminishing returns beyond that)
+- If only 1-3 URLs total, use single foreground agent
+- **Pass URLs explicitly** — agents should NOT re-search
+- Agents are haiku — cheap, fast, focused on extraction
+
+### 4. Write Output (File-First — NEVER Dump Inline)
+
+After ALL agents complete, synthesize summaries into ONE file.
+Target: ~5KB for topic research, ~3KB for library evaluations.
+
+Create `.claude/research/{topic-slug}.md`:
 
 ```markdown
 # Research: {topic}
 
 ## Summary
-{2-3 sentence answer to the research question}
+{2-3 sentence answer combining all worker findings}
 
 ## Sources
 
-### ElixirForum Discussions
-- [{thread title}]({url}) - {key insight}
-
-### Documentation
-- [{doc page}]({url}) - {relevant section}
+### {Category}
+- [{title}]({url}) - {key insight}
 
 ### Code Examples
 
 ```elixir
-# From {source}
-{example code}
+# From {source}: {what this demonstrates}
+{code}
 ```
 
 ## Recommendations
-
-Based on research:
 
 1. {recommendation with evidence}
 2. {recommendation with evidence}
@@ -126,22 +154,11 @@ Based on research:
 
 ```
 
-## Token Budget
+### 5. After Research — STOP
 
-| Source Type | Max Tokens |
-|-------------|------------|
-| Forum thread | 40,000 |
-| HexDocs | 30,000 |
-| Blog | 25,000 |
-| GitHub issue | 20,000 |
+**STOP and present the research summary.** Do NOT auto-transition.
 
-Total research output should be under 100k tokens.
-
-## After Research — STOP
-
-**STOP and present the research summary.** Do NOT auto-transition to planning, implementation, or any other workflow phase.
-
-Use `AskUserQuestion` to let the user choose their next action:
+Use `AskUserQuestion` to let the user choose next action:
 
 - "Plan a feature based on this research" → `/phx:plan`
 - "Investigate a specific finding" → `/phx:investigate`

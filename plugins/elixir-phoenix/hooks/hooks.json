@@ -18,6 +18,12 @@
           },
           {
             "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/iron-law-verifier.sh",
+            "timeout": 15,
+            "statusMessage": "Verifying Iron Laws..."
+          },
+          {
+            "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/security-reminder.sh",
             "timeout": 15
           },
@@ -42,6 +48,11 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/elixir-failure-hints.sh",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/error-critic.sh",
             "timeout": 15
           }
         ]
