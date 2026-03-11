@@ -581,6 +581,7 @@ This plugin was built with insights from these articles, repositories, and tools
 - <https://github.com/rjs/shaping-skills>
 - <https://github.com/affaan-m/everything-claude-code>
 - <https://github.com/blader/theorist>
+- <https://github.com/tmchow/tmc-marketplace> (iterative-engineering plugin)
 - <https://github.com/boshu2/agentops>
 
 ### Articles
