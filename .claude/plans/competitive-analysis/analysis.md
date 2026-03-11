@@ -662,7 +662,7 @@ Our plugin already has the strongest foundation (domain expertise + hooks + mult
 
 # Part 4: Carmack Council Plugin Analysis
 
-**Source**: https://github.com/Carmack-Council/Carmack-Council
+**Source**: https://github.com/SamJHudson01/Carmack-Council
 **Structure**: 4 skills, 9 shared reference docs, 0 hooks, 0 agents (inline subagent prompts)
 **Total content**: ~5,230 lines of markdown + build scripts
 **Stack**: Next.js / tRPC / Prisma / Neon (but designed for forking via STACK.md)
@@ -842,9 +842,105 @@ Their reference docs are deeply Prisma/Next.js specific (13 Prisma defaults to o
 
 ---
 
+# Part 5: Superpowers & Anthropic Skills Analysis
+
+## Part 5A: Superpowers Plugin
+
+**Source**: https://github.com/obra/superpowers
+**Author**: Jesse Vincent
+**Version**: 0.0.3 (14 skills, hooks, code-reviewer agent)
+
+### What It Is
+
+A concise, opinionated Claude Code plugin focused on **verification discipline** and **code quality gates**. Unlike sprawling plugins, Superpowers is tight — 14 skills, each under 100 lines, with a clear philosophy: "Evidence before claims, always."
+
+### Novel Patterns Worth Adopting
+
+#### 1. Verification-Before-Completion Discipline (High Value)
+
+**What they do:** A core principle enforced across all skills: **never claim something works without proving it**. Specific rules:
+- Ban the phrase "should work" — replace with evidence
+- Every task ends with verification (compile, test, manual check)
+- "If you can't verify it, say so explicitly"
+
+**What we do:** Our `verify` skill runs checks after work, but verification is a separate step. We don't enforce "prove it works" as a discipline within every task.
+
+**Recommendation:** Add a verification Iron Law:
+> **Iron Law 22: VERIFY BEFORE CLAIMING DONE** — Never say "should work" or "this fixes it." Run `mix compile && mix test` and show the result. If you can't verify, explicitly state what remains unverified.
+
+This is low-effort, high-impact — it's a behavioral rule, not new code.
+
+**Effort:** Very Low | **Impact:** High
+
+#### 2. Two-Stage Review (Spec Compliance + Code Quality) (Medium Value)
+
+**What they do:** Their code-reviewer agent runs two passes per task:
+1. **Spec compliance**: Does the code do what was asked?
+2. **Code quality**: Is the code well-written?
+
+These are separate evaluations with separate verdicts. Code can pass quality but fail spec, or vice versa.
+
+**What we do:** Our review agents evaluate holistically. No explicit separation between "does it do the right thing?" and "is it written well?"
+
+**Recommendation:** Consider adding spec compliance as a dimension in `parallel-reviewer`. When a plan exists, one review track could diff the implementation against plan checkboxes to verify completeness.
+
+**Effort:** Medium | **Impact:** Medium
+
+#### 3. CSO — Claude Search Optimization (High Value — Anti-Pattern Warning)
+
+**What they discovered:** When a skill's `description` field summarizes the entire workflow, Claude reads the description and follows it instead of loading the full skill content. The description becomes a low-fidelity version of the skill.
+
+**Fix:** Descriptions should ONLY contain triggering conditions, not workflow summaries.
+
+**Bad:** `"description": "Reviews code by running tests, checking coverage, and verifying spec compliance"`
+**Good:** `"description": "Use when reviewing code changes before commit or PR"`
+
+**What we should do:** Audit all 38 skill descriptions for CSO violations. Any description that reads like a workflow summary should be trimmed to triggering conditions only.
+
+**Effort:** Low | **Impact:** High — prevents skill content from being bypassed
+
+#### 4. Anti-Trigger Patterns in Descriptions (Medium Value)
+
+**From Anthropic Skills repo** (https://github.com/anthropics/skills): Skills include explicit `DO NOT TRIGGER when...` in descriptions to prevent false activations.
+
+**Example:** "Use when building with Claude API. DO NOT TRIGGER when: code imports openai, general programming, ML/data-science tasks."
+
+**What we should do:** Add anti-trigger conditions to skills that fire too broadly. E.g., `ecto-patterns` shouldn't trigger for Ash.Resource modules (we handle this in CLAUDE.md but not in the skill description).
+
+**Effort:** Very Low | **Impact:** Medium
+
+## Part 5B: Anthropic Skills Repository
+
+**Source**: https://github.com/anthropics/skills
+**Structure**: 3 plugin bundles (17 skills), skill-creator with eval pipeline
+
+### Novel Patterns
+
+#### 5. Skill-Creator Eval Pipeline (High Value — Long-Term)
+
+**What they do:** The `skill-creator` plugin includes an ML-style evaluation system:
+- Generate candidate skill descriptions
+- Test each against a corpus of user prompts (train/test split)
+- Measure trigger accuracy (precision + recall)
+- Iterate on description until optimal
+
+**What we lack:** We write descriptions manually and hope they trigger correctly. No systematic testing.
+
+**Recommendation:** Long-term, build a `/phx:skill-eval` that tests skill descriptions against sample prompts. Would use our session-scan data as training corpus.
+
+**Effort:** High | **Impact:** High (long-term)
+
+#### 6. Minimal Plugin Structure (Validation)
+
+Anthropic's official skills follow an extremely minimal structure — single-file skills, no complex orchestration. This validates that simple skills are effective; complexity should only exist where it earns its keep.
+
+**Effort:** None | **Impact:** Validation — keep trimming unnecessary complexity
+
+---
+
 ## Consolidated Cross-Plugin Landscape
 
-Five distinct philosophies now visible across the analyzed projects:
+Six distinct philosophies now visible across the analyzed projects:
 
 | Approach | Project | Strength | Weakness |
 |----------|---------|----------|----------|
@@ -853,13 +949,17 @@ Five distinct philosophies now visible across the analyzed projects:
 | **Strategic memory** | Theorist | Living mental model, holistic understanding | No workflow integration, no domain specificity |
 | **Iterative refinement** | iterative-engineering | Dynamic persona selection, structured review, TDD gates | No domain expertise, no hooks, no Iron Laws |
 | **Expert council** | Carmack Council | Deep sourced references, persona grounding, compound conventions | No hooks, inline prompts, stack-specific |
+| **Verification discipline** | Superpowers | Evidence-first culture, CSO awareness, tight skills | Small scope, no multi-agent orchestration |
 
 ### Highest-ROI Synthesis for Our Plugin
 
-Combining the best patterns from all four external projects, prioritized by effort-to-impact ratio:
+Combining the best patterns from all six external projects, prioritized by effort-to-impact ratio:
 
 | Priority | Feature | Source | Why It's High-ROI |
 |----------|---------|--------|-------------------|
+| **P0** | Verification Iron Law ("no 'should work'") | Superpowers | Very low effort, immediately improves trust |
+| **P0** | CSO audit — trim workflow summaries from descriptions | Superpowers | Low effort, prevents skill content bypass |
+| **P0** | Anti-trigger patterns in skill descriptions | Anthropic Skills | Very low effort, reduces false activations |
 | **P0** | Anti-over-recommendation filter | Carmack Council | Low effort, immediately reduces review noise |
 | **P0** | Mandatory summary table in reviews | Carmack Council | Very low effort, immediate UX improvement |
 | **P0** | Conventions.md from review findings | Carmack Council | Medium effort, compounds value over every review |
@@ -872,8 +972,12 @@ Combining the best patterns from all four external projects, prioritized by effo
 | **P1** | Expert-sourced reference docs | Carmack Council | More trustworthy findings |
 | **P1** | Pre-existing issue separation | iterative-engineering | Reduces review frustration |
 | **P1** | `/phx:coverage` test coverage skill | everything-claude-code | Directly improves code quality |
+| **P2** | Spec compliance review track | Superpowers | Separate "does it work?" from "is it clean?" |
 | **P2** | Scope-adaptive planning | iterative-engineering | Reduces friction for simple features |
 | **P2** | Enhanced continuous learning | everything-claude-code | Compounds value over time |
 | **P2** | `/phx:theory` Phase 2-3 (auto) | Theorist | Full strategic memory integration |
+| **P3** | Skill-creator eval pipeline | Anthropic Skills | Long-term, systematic trigger optimization |
 
-The theme: **review intelligence is the biggest gap**. Three of four external projects (Carmack Council, iterative-engineering, everything-claude-code) offer complementary improvements to our review pipeline. Combining the Carmack filter (reduces noise), dynamic selection (reduces waste), conventions loop (enables learning), and structured schema (enables automation) would make `/phx:review` dramatically more effective.
+The theme: **review intelligence is the biggest gap**. Four of six external projects (Carmack Council, iterative-engineering, Superpowers, everything-claude-code) offer complementary improvements to our review pipeline. The optimal combination: Carmack filter (reduces noise) + dynamic selection (reduces waste) + conventions loop (enables learning) + structured schema (enables automation) + verification discipline (builds trust) would make `/phx:review` dramatically more effective.
+
+**The compound advantage:** Deep domain expertise (Iron Laws) + intelligent review (dynamic, calibrated, structured) + strategic memory (THEORY.md) + verification culture (evidence-first) + self-improving knowledge (auto-compound) — no other plugin achieves this combination.
