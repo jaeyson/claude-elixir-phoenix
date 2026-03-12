@@ -1,13 +1,35 @@
 # Elixir Phoenix Plugin for Claude Code
 
-> **Early Stage** -- This plugin is under active development. Features may change, and rough edges are expected. Feedback and contributions welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
+**Claude Code is great. But it doesn't know that `assign_new` silently skips on reconnect, that `:float` will corrupt your money fields, or that your Oban job isn't idempotent.**
 
-A Claude Code plugin for Elixir/Phoenix/LiveView development with **agentic workflow orchestration**, 20 specialist agents, and Tidewave MCP integration.
+This plugin does. It coordinates **20 specialist agents** that plan, implement,
+review, and verify your Elixir/Phoenix code in parallel -- each with domain
+expertise, fresh context, and enforced [Iron Laws](#iron-laws-non-negotiable-rules)
+that catch the bugs your tests won't.
 
-Instead of a single AI assistant doing everything in one context window,
-this plugin coordinates specialist agents that work in parallel -- each
-with its own fresh context, domain expertise, and focused task. The result:
-deeper analysis, fewer hallucinations, and no context exhaustion on large features.
+```bash
+# You describe the feature. The plugin figures out the rest.
+/phx:plan Add real-time comment notifications
+
+# 4 research agents analyze your codebase in parallel.
+# A structured plan lands in .claude/plans/comment-notifications/plan.md
+# Then:
+
+/phx:work .claude/plans/comment-notifications/plan.md
+# Implements task by task. Compiles after each change.
+# Stops cold if code violates an Iron Law.
+
+/phx:review
+# 4 specialist agents audit in parallel:
+# idioms, security, tests, compilation.
+# Deduplicates findings. Flags pre-existing issues separately.
+```
+
+No prompt engineering. No "please check for N+1 queries." The plugin auto-loads
+the right domain knowledge based on what files you're editing and enforces rules
+that prevent the mistakes Elixir developers actually make in production.
+
+> **Early Stage** -- Under active development. Feedback and contributions welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
 
 ## Installation
 
