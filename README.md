@@ -581,6 +581,9 @@ This plugin was built with insights from these articles, repositories, and tools
 - <https://github.com/rjs/shaping-skills>
 - <https://github.com/affaan-m/everything-claude-code>
 - <https://github.com/blader/theorist>
+- <https://github.com/tmchow/tmc-marketplace> (iterative-engineering plugin)
+- <https://github.com/SamJHudson01/Carmack-Council> (persona-grounded expert council review)
+- <https://github.com/obra/superpowers> (verification discipline, CSO patterns)
 - <https://github.com/boshu2/agentops>
 
 ### Articles
@@ -603,6 +606,7 @@ This plugin was built with insights from these articles, repositories, and tools
 - <https://allanmacgregor.com/posts/setting-up-tidewave-beam-introspection>
 - <https://theengineeringmanager.substack.com/p/councils-of-agents>
 - <https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>
+- <https://arxiv.org/abs/2603.03329> (AutoHarness: improving LLM agents by automatically synthesizing a code harness)
 - <https://x.com/heynavtoor>
 
 ## License
