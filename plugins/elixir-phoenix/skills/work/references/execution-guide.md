@@ -113,20 +113,28 @@ Tasks are parallelizable if they:
 
 ### Spawning Pattern
 
-Spawn ALL parallel tasks in ONE message using the Agent tool:
+Spawn ALL parallel tasks in ONE message using the Agent tool.
+
+**Prompt quality matters**: Vague prompts ("fix the form") waste
+model capability. Give each agent a bounded, specific task with
+file paths, the exact pattern to follow, and what success looks
+like. This unlocks capabilities the model already has but can't
+access when tactically overwhelmed by ambiguity.
 
 ```
 Agent({
   subagent_type: "general-purpose",
   prompt: "Implement P2-T1: Add currency/area unit selectors to
     occupier deal form at lib/.../occupier_deal/.../details_form.ex.
-    [full task context here]",
+    Pattern: [exact code pattern from plan or sibling file].
+    Success: compiles, format passes, selectors render.",
   run_in_background: true,
   mode: "bypassPermissions"
 })
 Agent({
   subagent_type: "general-purpose",
-  prompt: "Implement P2-T2: Add selectors to landlord deal form...",
+  prompt: "Implement P2-T2: Add selectors to landlord deal form.
+    Follow same pattern as P2-T1 (see sibling file).",
   run_in_background: true,
   mode: "bypassPermissions"
 })

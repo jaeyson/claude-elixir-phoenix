@@ -128,7 +128,14 @@ For each unchecked task (`- [ ] [Pn-Tm][agent] Description`):
    - **Anti-thrash**: If reverting the same idea twice, stop and
      try a structurally different approach. Write to scratchpad
      IDEAS BACKLOG with alternative approaches to explore.
-6. This survives context compaction; the plan is re-read on resume.
+6. **Episode** (after checkpoint): Write a compressed task summary
+   to scratchpad — what changed, what was learned, key file paths.
+   This aids context recovery on resume and prevents re-discovery.
+   Format: `### [HH:MM] EPISODE: [Pn-Tm] {description}` followed
+   by `Changed:` and `Learned:` lines (see file-formats.md).
+   Only write episodes for tasks that taught something non-obvious.
+   Skip for mechanical tasks (formatting, renaming, config changes).
+7. This survives context compaction; the plan is re-read on resume.
 
 **Parallel groups**: Tasks under `### Parallel:` header spawn
 as background subagents. See `references/execution-guide.md`

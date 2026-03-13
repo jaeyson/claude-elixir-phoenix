@@ -40,6 +40,36 @@ Plans must follow this structure for parsing:
 - Blocker references
 - Progress tracking
 
+## Scratchpad File Format
+
+The scratchpad (`.claude/plans/{slug}/scratchpad.md`) captures
+decisions, dead-ends, episodes, and ideas. It is the primary
+context recovery document on resume.
+
+```markdown
+### [14:00] DECISION: Use citext for email
+Choice: citext extension. Rationale: case-insensitive by default.
+Alternatives rejected: lower() index (fragile), application-level downcase (leaky).
+
+### [14:32] EPISODE: [P1-T2] Add password_hash field
+Changed: lib/my_app/accounts/user.ex, priv/repo/migrations/xxx.exs
+Learned: Bcrypt.hash_pwd_salt/1 returns 60-char string, use :string not :binary
+
+### [15:10] DEAD-END: Cast assoc with shared tags
+Tried: cast_assoc with on_replace: :delete. Failed: duplicate tag inserts.
+Attempts: 3. See BLOCKER in progress.md for full error.
+
+### IDEAS BACKLOG
+- Try put_assoc with pre-fetched tags instead of cast_assoc
+- Consider many_to_many with join table for tag dedup
+```
+
+**Pruning rule**: On resume, if a DEAD-END has a corresponding
+EPISODE that solved the same problem (later session found a fix),
+the DEAD-END is stale. Don't delete it (it's still useful context
+for why the first approach failed), but prioritize EPISODE and
+IDEAS BACKLOG entries over old DEAD-ENDs when context is tight.
+
 ## Progress File Format
 
 ```markdown

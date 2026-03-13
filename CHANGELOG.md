@@ -31,6 +31,17 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Web-researcher: version-aware conflict resolution** — when sources disagree,
   check version compatibility against project's mix.lock. Note target versions in
   output, flag advice requiring newer versions than project uses
+- **Work skill: episode-style task summaries** — after each non-trivial task
+  checkpoint, write compressed EPISODE to scratchpad (what changed, what learned).
+  Aids context recovery on resume without re-reading all modified files
+  (inspired by Slate's episode compression)
+- **Work skill: scratchpad format documented** — new file-formats.md section with
+  full scratchpad schema (DECISION, EPISODE, DEAD-END, IDEAS BACKLOG) and pruning
+  rules for stale entries (inspired by Slate's retain-only-useful memory)
+- **Execution guide: focused agent prompts** — added prompt quality guidance for
+  parallel task spawning: bounded scope, exact patterns, success criteria. Unlocks
+  model capabilities that vague prompts leave unused
+  (inspired by Slate's "knowledge overhang" concept)
 
 ### Changed
 
