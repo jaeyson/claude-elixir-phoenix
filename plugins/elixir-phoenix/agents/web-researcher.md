@@ -104,7 +104,8 @@ Return **500-800 words max**. Do NOT dump full page contents.
 
 ## Conflicts (only if sources disagree)
 
-{Source A says X, Source B says Y. Trust {which} because {why}.}
+{Source A says X (v1.7), Source B says Y (v1.8). Trust {which}
+because {reason + version match with project}.}
 
 ```
 
@@ -115,6 +116,17 @@ Return **500-800 words max**. Do NOT dump full page contents.
 3. **GitHub issues (closed)** — bug fixes, workarounds
 4. **fly.io/phoenix-files** — quality tutorials
 5. **Other blogs** — may be outdated, verify version
+
+## Version-Aware Conflict Resolution
+
+When sources disagree, check version compatibility:
+
+- If caller provided project versions (from `mix.lock`), prefer
+  sources matching that version over newer/older advice
+- Note the library version each source targets in the output
+- Flag advice that requires a version newer than the project uses
+- Phoenix 1.7 vs 1.8 patterns differ significantly (scopes, etc.)
+  — always note which version the advice applies to
 
 ## Tidewave Note
 

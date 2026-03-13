@@ -141,6 +141,12 @@ Before writing the review, apply these overriding filters to each finding:
 3. Are any findings duplicates reworded by different agents?
 4. Does the finding affect code actually changed in this diff?
 5. Is the finding on unchanged code (not in diff)? → Mark PRE-EXISTING
+6. **Proportionality check**: Is the complexity added (lines, new
+   modules, new dependencies) proportionate to the value delivered?
+   Flag changes where 20+ lines of abstraction serve a 3-line need,
+   or where a new dependency replaces 5 lines of stdlib code.
+   Simpler is better — a small improvement from deleting code
+   beats a small improvement from adding code.
 
 Demote or remove findings that fail filters 1-4. Mark pre-existing per filter 5.
 

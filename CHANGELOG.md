@@ -5,6 +5,39 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Work skill: anti-thrashing directive (Iron Law #9)** — if 2+ attempts at the
+  same approach fail, write DEAD-END to scratchpad and try structurally different
+  approach. Prevents wasting context on shallow retry loops
+  (inspired by karpathy/autoresearch)
+- **Work skill: checkpoint pattern (Iron Law #10)** — keep/discard decision after
+  each task: commit passing work as WIP checkpoint, revert to last checkpoint on
+  failure after 3 retries. Prevents accumulating broken state across tasks
+  (inspired by autoresearch keep/revert loop)
+- **Work skill: IDEAS BACKLOG in scratchpad** — persistent scratchpad section for
+  promising-but-deferred approaches that survives context resets. Checked on every
+  resume (Step 2) so fresh agents don't re-discover alternatives from scratch
+  (inspired by pi-autoresearch ideas backlog)
+- **Work skill: context recovery documentation** — enhanced resume-strategies
+  reference with ordered recovery file reading and scratchpad-as-recovery-document
+  pattern (inspired by autoresearch's self-documenting loop state)
+- **Review skill: proportionality check (filter #6)** — flags changes where
+  complexity added is disproportionate to value delivered. Simpler is better — a
+  small improvement from deleting code beats one from adding code
+  (inspired by autoresearch simplicity criterion)
+- **Web-researcher: version-aware conflict resolution** — when sources disagree,
+  check version compatibility against project's mix.lock. Note target versions in
+  output, flag advice requiring newer versions than project uses
+
+### Changed
+
+- **Planning-orchestrator: research cache TTL standardized to 24h** — was 48h,
+  now matches research skill's 24h TTL. Added keyword-similarity matching for
+  cache reuse (not just exact slug match)
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed

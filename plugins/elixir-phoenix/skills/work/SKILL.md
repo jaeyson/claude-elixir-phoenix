@@ -36,10 +36,17 @@ Execute tasks from a plan file with checkpoint tracking and verification.
 4. **Verify after EVERY task** -- never skip verification
 5. **Max 3 retries then BLOCKER** -- don't keep retrying forever
 6. **Stage specific files** -- never use `git add -A` or `git add .`
-7. **Read scratchpad BEFORE implementing** -- scratchpad has dead-ends
-   and decisions that prevent rework. Step 2 is not optional.
+7. **Read scratchpad BEFORE implementing** -- scratchpad has dead-ends,
+   decisions, and ideas backlog that prevent rework. Step 2 is not optional.
 8. **Clarify ambiguous tasks** -- ask the user rather than guessing
    when a plan task's intent is unclear
+9. **Don't thrash** -- if 2+ attempts at the same approach fail,
+   write a DEAD-END to scratchpad and try something structurally
+   different. Repeatedly reverting the same idea wastes context.
+10. **Checkpoint after each task** -- commit passing work before
+    moving to next task. If a task breaks tests and the fix isn't
+    obvious after 3 retries, revert to last checkpoint and log
+    as BLOCKER (see Step 4 checkpoint pattern).
 
 ## Step 1: Research Decision
 
@@ -59,8 +66,8 @@ Skip for plans with 3 or fewer simple tasks -- just start.
 ## Step 2: Check Context (MANDATORY)
 
 Read scratchpad and compound docs before writing any code.
-Skipping this causes rework — scratchpad captures dead-ends
-and decisions from planning that prevent taking wrong paths.
+Skipping this causes rework — scratchpad captures dead-ends,
+decisions, and ideas backlog from prior sessions.
 
 ```bash
 # Read full scratchpad — it's short and has critical context
@@ -70,8 +77,10 @@ grep -rl "KEYWORD" .claude/solutions/ 2>/dev/null
 ```
 
 Apply findings: skip dead-ends, follow decisions, reuse patterns.
-If a task's intent is ambiguous, ask the user before implementing
-rather than guessing — corrections are expensive.
+**Check IDEAS BACKLOG** — if prior sessions logged promising
+alternative approaches, prioritize those over re-trying failed
+paths. If a task's intent is ambiguous, ask the user before
+implementing rather than guessing — corrections are expensive.
 
 ## Step 3: Load, Create Task List, and Resume
 
@@ -107,13 +116,19 @@ For each unchecked task (`- [ ] [Pn-Tm][agent] Description`):
 3. **Implement** the task
 4. **Verify**: `mix format` + `mix compile --warnings-as-errors`
    (at phase end, also run `mix test <affected>` — see tiers below)
-5. **Complete task**: Mark checkbox `[x]` on pass, **append
-   implementation note** inline, AND
-   `TaskUpdate({taskId, status: "completed"})`. Example:
-   `- [x] [P1-T3] Add user schema — citext for email, composite index on [user_id, status]`
-   This survives context compaction; the plan is re-read on resume.
-6. **On failure**: retry up to 3 times, then create BLOCKER
-   and write DEAD-END to scratchpad (see error-recovery.md)
+5. **Checkpoint** (keep/discard decision):
+   - **Keep** (tests pass): Mark checkbox `[x]`, **append
+     implementation note** inline, commit with
+     `git commit -m "WIP: [Pn-Tm] description"`, AND
+     `TaskUpdate({taskId, status: "completed"})`. Example:
+     `- [x] [P1-T3] Add user schema — citext for email, composite index`
+   - **Discard** (tests fail after 3 retries): Revert to last
+     checkpoint (`git checkout -- .`), create BLOCKER, write
+     DEAD-END to scratchpad (see error-recovery.md)
+   - **Anti-thrash**: If reverting the same idea twice, stop and
+     try a structurally different approach. Write to scratchpad
+     IDEAS BACKLOG with alternative approaches to explore.
+6. This survives context compaction; the plan is re-read on resume.
 
 **Parallel groups**: Tasks under `### Parallel:` header spawn
 as background subagents. See `references/execution-guide.md`
@@ -153,9 +168,16 @@ With blockers: list them, offer **Replan** (`/phx:plan`),
 Status: {done}/{total} tasks. Blockers: {list}.
 Next: {first unchecked task ID and description}.
 Key decisions: {brief list from this session}.
+
+### IDEAS BACKLOG
+- {promising approach not yet tried}
+- {alternative strategy suggested during debugging}
 ```
 
 This gives a fresh session context beyond just checkboxes.
+The IDEAS BACKLOG persists deferred approaches across context
+resets — a fresh agent reads it on resume and prioritizes
+from the backlog instead of re-discovering paths from scratch.
 
 **NEVER** auto-start /phx:review or any other phase.
 

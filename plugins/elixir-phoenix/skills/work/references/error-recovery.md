@@ -52,7 +52,19 @@ Tried: {approach attempted}. Failed because: {root cause}.
 Attempts: 3. See BLOCKER in progress.md for full error.
 ```
 
-Append to `.claude/plans/{slug}/scratchpad.md`.
+**If the dead-end suggests alternative approaches**, add them
+to the IDEAS BACKLOG so future sessions can pick them up:
+
+```markdown
+### IDEAS BACKLOG
+- Try {alternative approach} instead of {failed approach}
+- Consider {different pattern} — may avoid {root cause}
+- {promising direction observed during debugging}
+```
+
+Append both to `.claude/plans/{slug}/scratchpad.md`.
+The IDEAS BACKLOG is checked on every resume (Step 2) and
+prevents agents from re-discovering alternatives from scratch.
 
 ## Recovery After BLOCKER
 

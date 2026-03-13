@@ -50,6 +50,22 @@ On resume, the plan file itself shows progress:
 
 No state file to parse. Just find first `[ ]` and continue.
 
+## Context Recovery on Resume
+
+When resuming (`--continue`), read these files in order to
+reconstruct full context without re-discovering prior work:
+
+1. **Plan file** — checkbox state, task descriptions
+2. **Scratchpad** — decisions, dead-ends, IDEAS BACKLOG
+3. **Progress.md** — session history, error logs
+4. **Git log** — WIP checkpoint commits show what was done
+
+The scratchpad is the key recovery document. A fresh agent
+with zero prior context can read the scratchpad and understand:
+what was tried, what failed, what's blocked, and what ideas
+remain unexplored. Keep it current — write to it during work,
+not just at completion.
+
 ## Consistency Check
 
 On resume, validate:

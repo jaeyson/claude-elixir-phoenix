@@ -60,8 +60,10 @@ Tidewave. Skip if unavailable — agents fall back to static analysis.
 ### Phase 1c: Research Cache Reuse
 
 Before spawning web/hex agents, check `.claude/research/` and
-`.claude/plans/*/research/` for matching research <48h old.
-If found, skip the agent and reuse cached findings.
+`.claude/plans/*/research/` for matching research <24h old.
+If found, skip the agent and reuse cached findings. Match by
+keyword similarity, not just exact slug — a research file on
+"oban unique jobs" should match a plan about "unique job handling".
 
 ### Phase 2: Spawn Research Agents (Parallel)
 
