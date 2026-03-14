@@ -9,6 +9,21 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.4.0] - 2026-03-14
 
+### Fixed
+
+- **Document: no-op pre-check** — `/phx:document` now checks `git diff`
+  for new `.ex` files before running full audit. Prevents 35-message
+  analysis sessions that conclude "PASS — nothing needed" (session bb0a0454)
+- **Challenge: dedup enforcement** — Strengthened prior findings dedup
+  to prevent "3 challenges to clear" problem where same critical issues
+  re-appear across consecutive runs. Now MANDATORY with explicit SKIP
+  for fixed issues and one-line PERSISTENT mentions
+- **Investigate: no confirmatory subagents** — Added rule to avoid
+  spawning parallel subagents when root cause already identified in
+  main context (~80K tokens wasted in session c135330a)
+- **Audit: lean agent output** — Added output efficiency rule to audit
+  subagent prompts (report only issues, not clean checks)
+
 ### Changed
 
 - **Review: Conditional agent spawning** — Iron-law-judge now skipped when
