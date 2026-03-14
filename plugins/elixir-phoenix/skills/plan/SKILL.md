@@ -44,7 +44,7 @@ structured plan with checkboxes.
 5. **Spawn research agents** — Selective, parallel, based on need.
    Create a Claude Code task per agent for progress visibility:
    `TaskCreate({subject: "{Agent} research", activeForm: "Researching..."})`,
-   mark `in_progress` on spawn, `completed` when done
+   Mark `in_progress` on spawn, `completed` when done
 6. **Wait for ALL agents** — Do NOT proceed until all return
    "completed". NEVER write plan while any agent is still running
 7. **Breadboard** (LiveView) — System map for multi-page features

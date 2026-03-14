@@ -238,7 +238,7 @@ Include ALL selected options in the plan's Technical Decisions
 table with the multi-perspective rationale from council agents.
 
 For decisions where agents AGREE (all recommend the same option),
-skip AskUserQuestion — just note the consensus in the plan.
+Skip AskUserQuestion — just note the consensus in the plan.
 
 **Cost control**: Only trigger for decisions where research agents
 explicitly presented 2+ options. Most plans have 0-1 such
@@ -532,4 +532,4 @@ This is Iron Law #1. The user decides when and how to start work.
 ## Error Handling
 
 If an agent fails: note the gap, research with Read/Grep yourself,
-document assumptions, suggest manual review of that area.
+Document assumptions, suggest manual review of that area.

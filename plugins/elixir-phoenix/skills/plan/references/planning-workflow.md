@@ -269,7 +269,7 @@ plan with deeper research instead of creating a new one.
 4. **Wait for ALL agents** -- Call `TaskOutput(task_id, block: true)`
    for every spawned agent. Do NOT proceed until all complete
 5. **Enhance plan** -- Add implementation detail, resolve spikes,
-   add verification criteria, note risk from compound docs
+   Add verification criteria, note risk from compound docs
 6. **Present diff summary** -- Show what was enhanced
 
 ### When Deepening Adds Value

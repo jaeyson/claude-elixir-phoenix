@@ -5,6 +5,17 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Prompt capitalization** — Capitalize imperative verbs at the start of
+  instruction lines in `planning-orchestrator.md`, `plan/SKILL.md`, and
+  `planning-workflow.md`. Research shows capitalized leading verbs improve
+  instruction-following on Claude models
+  (ref: [kchonyc/x](https://x.com/kchonyc/status/2032229823519568145),
+  Karpathy autoresearch commit)
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed
