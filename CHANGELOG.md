@@ -5,6 +5,21 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`/skill-improve` command (dev-only)** — Closes the self-improvement feedback
+  loop: reads recommendations from `/skill-monitor --improve`, generates concrete
+  patch proposals for underperforming skills, and optionally applies them. Includes
+  drift guards (evidence thresholds, Iron Law preservation, regression baselines)
+  and revert capability. Inspired by the "observe > inspect > amend" pattern from
+  community discussion on self-improving skills
+- **`skill-improver` agent (dev-only)** — Sonnet agent that reads skill-effectiveness-analyzer
+  recommendations and produces reviewable patch files in `.claude/skill-metrics/patches/`.
+  Enforces minimal diffs, size compliance, and one-patch-per-skill-per-run to prevent
+  model collapse / drift
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed

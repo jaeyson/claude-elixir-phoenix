@@ -54,7 +54,10 @@ Each plan owns all its artifacts in a namespace directory:
 ├── reviews/                   # Fallback for ad-hoc reviews (no plan)
 ├── skill-metrics/             # Skill effectiveness dashboards and recommendations
 │   ├── dashboard-{date}.json  # Per-skill aggregate metrics
-│   └── recommendations-{date}.md  # Improvement recommendations
+│   ├── recommendations-{date}.md  # Improvement recommendations
+│   ├── patches/               # Proposed/applied skill patches
+│   │   └── {date}-{skill}.md  # Individual patch proposals
+│   └── applied-patches.jsonl  # Patch application audit log
 └── solutions/{category}/      # Global compound knowledge (unchanged)
     ├── ecto-issues/
     ├── liveview-issues/
@@ -85,6 +88,7 @@ claude-elixir-phoenix/
 ├── .claude/                         # Contributor tooling (NOT distributed)
 │   ├── agents/
 │   │   ├── phoenix-project-analyzer.md  # Analyze external codebases
+│   │   ├── skill-improver.md            # Apply skill improvement patches
 │   │   └── docs-validation-orchestrator.md  # Plugin docs compatibility
 │   ├── commands/
 │   │   ├── psql-query.md
@@ -93,7 +97,8 @@ claude-elixir-phoenix/
 │       ├── docs-check/              # /docs-check — validate against Claude Code docs
 │       ├── session-scan/            # /session-scan — Tier 1 metrics
 │       ├── session-deep-dive/       # /session-deep-dive — Tier 2 analysis
-│       └── session-trends/          # /session-trends — trend reporting
+│       ├── session-trends/          # /session-trends — trend reporting
+│       └── skill-improve/          # /skill-improve — apply skill patches
 ├── scripts/
 │   └── fetch-claude-docs.sh         # Download Claude Code docs for validation
 ├── plugins/
@@ -624,6 +629,7 @@ When working on code, automatically consult relevant reference documentation bef
 | Deep-analyze sessions | `/session-deep-dive` |
 | View session trends | `/session-trends` |
 | Monitor skill effectiveness | `/skill-monitor` |
+| Improve underperforming skills | `/skill-improve` |
 | Validate plugin against docs | `/docs-check` |
 
 **Workflow Commands**: `/phx:plan` -> `/phx:brief` (optional) -> `/phx:plan --existing` (optional) -> `/phx:work` -> `/phx:brief` (optional) -> `/phx:review` -> `/phx:triage` (optional) -> `/phx:compound`
@@ -637,6 +643,8 @@ When working on code, automatically consult relevant reference documentation bef
 **Session Analytics (dev-only, requires ccrider MCP)**: `/session-scan`, `/session-deep-dive`, `/session-trends`
 
 **Skill Monitoring (dev-only)**: `/skill-monitor` — per-skill effectiveness dashboard and improvement recommendations
+
+**Skill Improvement (dev-only)**: `/skill-improve` — propose and apply patches to underperforming skills based on `/skill-monitor --improve` recommendations
 
 **Plugin Maintenance (dev-only)**: `/docs-check` — validate plugin against latest Claude Code documentation
 
