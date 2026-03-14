@@ -167,11 +167,10 @@ end
 
 1. ...
 
-## What's Good
-
-- {positive feedback}
-
 ```
+
+Do NOT include "What's Good" sections — only report issues found.
+Positive feedback wastes tokens for zero actionable value.
 
 ## Dialyzer Patterns
 

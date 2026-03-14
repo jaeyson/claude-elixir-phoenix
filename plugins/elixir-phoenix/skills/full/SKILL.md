@@ -100,11 +100,18 @@ For fully autonomous execution with Ralph Wiggum Loop:
 
 ## Iron Laws
 
-1. **NEVER skip verification** — Every task must pass `mix compile --warnings-as-errors` + `mix test` before moving to the next. Skipping compounds errors across tasks
+1. **NEVER skip verification** — Every task must pass `mix compile --warnings-as-errors` before moving to the next. Run `mix test <affected>` per-phase, full suite only at final gate
 2. **Respect cycle limits** — When `--max-cycles` is exhausted, STOP with INCOMPLETE status. Do not continue indefinitely hoping the next fix works
 3. **One state transition at a time** — Follow the state machine strictly. Never jump from PLANNING to REVIEWING — each state produces artifacts the next state needs
 4. **Discover before deciding** — Always run DISCOVERING phase to assess complexity. Skipping it for "simple" features leads to underplanned implementations
 5. **Agent output is findings, not fixes** — Review agents report issues. Only the WORKING state makes code changes
+6. **Skip redundant review agents** — In REVIEWING phase: skip
+   verification-runner (work phase already verified), skip iron-law-judge
+   if PostToolUse hooks verified all files. For <200 lines changed,
+   spawn only elixir-reviewer + security-analyzer (if auth files)
+7. **No narration in autonomous mode** — Execute tool calls directly.
+   Only narrate decisions, errors, or phase transitions. Do NOT
+   prefix every tool call with "Let me now..." or "Now I need to..."
 
 ## References
 
