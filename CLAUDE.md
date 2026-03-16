@@ -222,7 +222,7 @@ Defined in `hooks/hooks.json`:
   **error critic** that detects repeated failures and escalates to structured analysis (both via `additionalContext`)
 - `SubagentStart`: Inject all Iron Laws into every spawned subagent via `additionalContext` (addresses zero skill auto-loading gap)
 - `PreCompact`: Re-inject workflow rules (plan/work/full) before compaction via JSON `systemMessage`
-- `SessionStart` (all): Setup `.claude/` directories + Tidewave detection
+- `SessionStart` (all): Setup `.claude/` directories + Tidewave detection + QMD detection
 - `SessionStart` (startup|resume only): Scratchpad check + resume workflow detection + branch freshness + workflow hints
 - `Stop`: Warn if plans have unchecked tasks
 
@@ -241,6 +241,16 @@ When Tidewave MCP available:
 - Prefer `mcp__tidewave__get_docs` over web search
 - Prefer `mcp__tidewave__project_eval` over test scripts
 - Prefer `mcp__tidewave__execute_sql_query` over psql
+
+### QMD Integration
+
+When QMD MCP available (detected at session start by `detect-qmd.sh`):
+
+- Prefer `mcp__qmd__query` over `grep -rl` for `.claude/solutions/` search
+- QMD provides hybrid search: BM25 + vector embeddings + LLM reranking
+- Finds solutions by semantic similarity, not just keyword match
+- See `qmd-search` skill for MCP tool reference and setup guide
+- After `/phx:compound` creates solutions, remind user: `qmd update && qmd embed`
 
 ## Development
 

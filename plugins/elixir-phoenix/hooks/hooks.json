@@ -101,6 +101,12 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/detect-tidewave.sh",
             "timeout": 30,
             "statusMessage": "Detecting Tidewave..."
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/detect-qmd.sh",
+            "timeout": 15,
+            "statusMessage": "Detecting QMD..."
           }
         ]
       },

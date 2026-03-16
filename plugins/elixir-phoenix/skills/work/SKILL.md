@@ -65,7 +65,17 @@ and decisions from planning that prevent taking wrong paths.
 ```bash
 # Read full scratchpad — it's short and has critical context
 cat .claude/plans/{slug}/scratchpad.md 2>/dev/null
-# Check compound docs for solved patterns
+```
+
+Check compound docs for solved patterns — **if QMD MCP available**:
+
+```
+mcp__qmd__query({ query: "<task description keywords>" })
+```
+
+**Otherwise** fall back to grep:
+
+```bash
 grep -rl "KEYWORD" .claude/solutions/ 2>/dev/null
 ```
 

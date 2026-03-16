@@ -5,6 +5,18 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **QMD MCP integration** — Semantic search over compound knowledge (`.claude/solutions/`)
+  using [QMD](https://github.com/tobi/qmd) hybrid search (BM25 + vectors + reranking).
+  New `qmd-search` skill with MCP tool reference, setup guide, and search patterns.
+  SessionStart `detect-qmd.sh` hook auto-detects QMD availability. When present,
+  `/phx:investigate`, `/phx:work`, and `/phx:compound` prefer `mcp__qmd__query`
+  over `grep -rl` for solution discovery. Falls back to grep when QMD unavailable.
+  After `/phx:compound` creates solutions, reminds user to re-index (`qmd update && qmd embed`)
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed

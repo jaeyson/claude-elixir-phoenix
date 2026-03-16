@@ -58,7 +58,15 @@ Skip documentation for:
 
 ### Phase 2: Duplicate Detection
 
-Search existing solutions before creating new:
+Search existing solutions before creating new.
+
+**If QMD MCP available** (semantic search):
+
+```
+mcp__qmd__query({ query: "<symptom or root cause description>", limit: 5 })
+```
+
+**Otherwise** fall back to grep:
 
 ```bash
 grep -rl "NotLoaded\|timeout\|N+1" .claude/solutions/ 2>/dev/null
@@ -120,9 +128,17 @@ If the solution matches any of these, suggest promotion:
 - **Iron Law violation** — Suggest updating iron-law-judge
 - **Recurring pattern** (3+ similar) — Suggest adding to skill reference
 
+### Phase 8: QMD Re-index Reminder
+
+If QMD MCP was detected at session start, remind the user:
+
+> New solution created. Run `qmd update && qmd embed` to make
+> it searchable in future sessions.
+
 ## Integration with Other Skills
 
 - `/phx:learn` captures quick patterns in `common-mistakes.md`
 - `/phx:compound` captures detailed solutions with full context
 - `/phx:investigate` searches `.claude/solutions/` before investigating
 - `/phx:plan` consults for known risks in planned areas
+- QMD MCP enables semantic search across all of the above

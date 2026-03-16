@@ -42,6 +42,14 @@ or involves concurrency, or user says `--parallel`/`deep`.
 
 ### Step 0: Consult Compound Docs
 
+**If QMD MCP available** (detected at session start):
+
+```
+mcp__qmd__query({ query: "<error message or symptom>" })
+```
+
+**Otherwise** fall back to grep:
+
 ```bash
 grep -rl "KEYWORD" .claude/solutions/ 2>/dev/null
 ```

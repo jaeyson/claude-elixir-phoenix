@@ -35,6 +35,14 @@ institutional documentation.
 
 ### Step 2: Search Existing Solutions
 
+**If QMD MCP available** (detected at session start):
+
+```
+mcp__qmd__query({ query: "<symptom or root cause description>" })
+```
+
+**Otherwise** fall back to grep:
+
 ```bash
 mkdir -p .claude/solutions
 grep -rl "KEYWORD" .claude/solutions/ 2>/dev/null
@@ -57,6 +65,13 @@ then create file using `compound-docs/references/resolution-template.md`.
 2. **Promote to Iron Law check** — Add to iron-law-judge
 3. **Update skill reference** — Add to relevant skill
 4. **Update CLAUDE.md** — Add prevention rule
+
+### Step 5: QMD Re-index Reminder
+
+If QMD MCP was detected at session start, remind the user:
+
+> New solution created. Run `qmd update && qmd embed` to make
+> it searchable in future sessions.
 
 ## Auto-Trigger Phrases
 
