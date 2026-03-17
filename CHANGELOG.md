@@ -5,6 +5,17 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Anthropic skills guide gap analysis** — Contributor reference mapping
+  Anthropic's "Skills: Lessons from Hundreds in Production" article against
+  our 38 skills. Identifies 5 actionable gaps: no scripts/assets in skill
+  folders, missing scaffolding skills, shallow product verification, missing
+  gotchas sections, no CI babysit skills. Validates Iron Laws approach and
+  progressive disclosure via references/
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed
