@@ -34,7 +34,7 @@ that prevent the mistakes Elixir developers actually make in production.
 │  ⚗  Elixir/Phoenix Plugin for Claude Code                           │
 │                                                                     │
 │  ┌──────────┬──────────┬──────────┬──────────┬──────────┐           │
-│  │    20    │    38    │    92    │    18    │    22    │           │
+│  │    20    │    41    │    96    │    18    │    22    │           │
 │  │  Agents  │  Skills  │   Refs   │  Hooks   │Iron Laws │           │
 │  └──────────┴──────────┴──────────┴──────────┴──────────┘           │
 │                                                                     │
@@ -501,6 +501,9 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 | `/phx:trace <function>`  | Build call trees to trace function flow                    |
 | `/phx:boundaries`        | Analyze Phoenix context boundaries with mix xref           |
 | `/phx:examples`          | Practical examples and pattern walkthroughs                |
+| `/phx:scaffold <type>`   | Generate convention-aware code (LiveView, context, worker) |
+| `/phx:e2e <flow>`        | Generate end-to-end product verification tests             |
+| `/phx:babysit-ci [PR]`   | Monitor GitHub Actions CI, detect flaky vs real failures   |
 | `/ecto:constraint-debug` | Debug Ecto constraint violations                           |
 
 ### Analysis
@@ -685,6 +688,8 @@ This plugin was built with insights from these articles, repositories, and tools
 - <https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>
 - <https://arxiv.org/abs/2603.03329> (AutoHarness: improving LLM agents by automatically synthesizing a code harness)
 - <https://x.com/heynavtoor>
+- [Skills: Lessons from Hundreds in Production at Anthropic](https://www.anthropic.com/engineering/skills-lessons-from-hundreds-in-production)
+  (Thariq, March 2026) — Skill categorization, gotchas, progressive disclosure
 
 ## License
 

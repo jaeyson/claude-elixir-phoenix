@@ -73,6 +73,13 @@ For each duplication found, report:
 3. **Extraction**: Suggested shared function/module
 4. **Effort**: Low/Medium/High to fix
 
+## Gotchas
+
+- **Premature abstraction is worse than duplication** — Don't extract shared code until you see 3+ real duplications with identical structure. Two similar-looking functions often diverge later
+- **Credo false positives on complexity** — `with` chains and pattern-match-heavy functions score high on cyclomatic complexity but may be the most readable option. Use judgment, not just the score
+- **Refactoring without tests** — Never refactor code that lacks test coverage. Write tests first, then refactor. The refactor itself can introduce bugs
+- **Context boundary violations masquerade as duplication** — Two contexts calling similar Repo queries may be correct (separate bounded contexts), not duplication to extract
+
 ## Usage
 
 Run `/phx:techdebt` to analyze the codebase and generate a prioritized report of technical debt with specific remediation steps.

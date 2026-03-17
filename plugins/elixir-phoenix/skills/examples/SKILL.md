@@ -127,6 +127,13 @@ This plugin enforces non-negotiable rules across all agents:
 #    - Authorization (re-checked in events?)
 ```
 
+## Gotchas
+
+- **Official docs version mismatch** — HexDocs links default to latest version. If project is on Phoenix 1.7 but docs show 1.8 scopes API, patterns won't work. Always check `mix.exs` version first
+- **Plugin examples assume phx.gen.auth** — Most auth examples assume `mix phx.gen.auth` was used. If the project uses a custom auth system, adapt patterns accordingly
+- **Tidewave examples require running dev server** — All `mcp__tidewave__` examples fail if `mix phx.server` isn't running. Check first
+- **Iron Law examples are enforcement rules, not tutorials** — They show what NOT to do. Don't copy the "BAD" examples
+
 ## When to Use Official Docs vs Plugin
 
 | Situation | Use |

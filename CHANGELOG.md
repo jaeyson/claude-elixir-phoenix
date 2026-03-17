@@ -5,16 +5,34 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.4.0] - 2026-03-17
 
 ### Added
 
-- **Anthropic skills guide gap analysis** — Contributor reference mapping
-  Anthropic's "Skills: Lessons from Hundreds in Production" article against
-  our 38 skills. Identifies 5 actionable gaps: no scripts/assets in skill
-  folders, missing scaffolding skills, shallow product verification, missing
-  gotchas sections, no CI babysit skills. Validates Iron Laws approach and
-  progressive disclosure via references/
+- **`/phx:scaffold` skill** — Convention-aware code generation for LiveView,
+  context, worker, and migration modules with Iron Law compliance baked in.
+  Includes 4 reference templates with test stubs
+- **`/phx:e2e` skill** — End-to-end product verification test generation
+  for complete user flows using LiveViewTest or Wallaby
+- **`/phx:babysit-ci` skill** — Monitor GitHub Actions CI runs, distinguish
+  flaky failures from real ones, auto-retry transient failures (max 2),
+  and report structured failure analysis
+- **Verification script** (`verify/scripts/full-check.sh`) — Executable
+  shell script for the full compile→format→credo→test→dialyzer loop.
+  First non-markdown asset in a skill folder
+- **Compound solution JSON schema** (`compound-docs/schemas/solution.schema.json`)
+  — Machine-readable schema for solution documentation YAML frontmatter
+- **Gotchas sections** added to 6 skills that were missing them:
+  `techdebt`, `examples`, `hexdocs-fetcher`, `intent-detection`,
+  `assigns-audit`, `tidewave-integration`
+- **Anthropic skills guide** (`SKILLS-GUIDE.md`) — Contributor reference
+  mapping Anthropic's "Skills: Lessons from Hundreds in Production" article
+  against plugin skills. Identifies gaps and validates existing patterns
+
+### Changed
+
+- **README** — Updated skill/reference counts (38→41 skills, 92→96 refs),
+  added 3 new commands to utility table, added article to Sources section
 
 ## [2.3.1] - 2026-03-12
 

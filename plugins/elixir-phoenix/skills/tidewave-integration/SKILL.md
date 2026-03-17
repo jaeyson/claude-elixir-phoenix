@@ -92,6 +92,14 @@ workflow checkpoints** automatically:
 
 See `references/proactive-patterns.md` for full integration points.
 
+## Gotchas
+
+- **`project_eval` runs in the app process** — Long-running evals block the endpoint. Never eval `Repo.all` on large tables or infinite loops. Use timeouts
+- **`execute_sql_query` bypasses Ecto** — Raw SQL won't trigger Ecto callbacks, validations, or virtual fields. Results may differ from what your app returns
+- **Tidewave disappears on crash** — If the Phoenix app crashes, all Tidewave tools become unavailable. Check `/mcp` after unexpected errors
+- **`get_docs` returns YOUR version** — This is a feature, not a bug. But if you're debugging a version upgrade, the docs reflect the OLD version in `mix.lock`, not the version you're upgrading to
+- **Browser eval needs Chrome/Chromium** — `browser_eval` requires a Chromium-based browser with DevTools protocol. Firefox and Safari won't work
+
 ## References
 
 For detailed patterns, see:

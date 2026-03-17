@@ -26,6 +26,7 @@ All 38 skills are `.md` only. The article emphasizes that the most interesting
 skills use folders creatively with scripts, templates, and data files.
 
 **Quick wins:**
+
 - Add template files to scaffolding skills (EEx templates for new LiveViews, contexts)
 - Add shell scripts to verification skills (e.g., `verify/scripts/full-check.sh`)
 - Add JSON schemas to compound-docs for solution validation
@@ -55,6 +56,7 @@ The article calls gotchas the "highest-signal part" of any skill. Update them
 from real failure modes observed in sessions.
 
 **Skills missing explicit Gotchas/Iron Laws:**
+
 - `techdebt` — no gotchas section
 - `examples` — no gotchas section
 - `hexdocs-fetcher` — no gotchas section
@@ -88,13 +90,7 @@ The article validates several of our existing patterns:
 
 ## Key Quotes to Remember
 
-> "The most interesting part is they're **folders** that can include scripts,
-> assets, data, etc. that the agent can discover, explore and manipulate."
-
-> "Build a Gotchas Section — Highest-signal part. Update from real failure modes."
-
-> "[Product Verification skills are] extremely useful for correctness.
-> Worth investing engineering time."
-
-> "Don't State the Obvious — Focus on org-specific knowledge that pushes
-> Claude out of default behavior."
+- "The most interesting part is they're **folders** that can include scripts, assets, data, etc. that the agent can discover, explore and manipulate."
+- "Build a Gotchas Section — Highest-signal part. Update from real failure modes."
+- "[Product Verification skills are] extremely useful for correctness. Worth investing engineering time."
+- "Don't State the Obvious — Focus on org-specific knowledge that pushes Claude out of default behavior."

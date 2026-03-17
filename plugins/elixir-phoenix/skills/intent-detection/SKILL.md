@@ -83,6 +83,13 @@ When a task matches a workflow command, check complexity before suggesting:
 2. **One suggestion max** — Don't re-suggest if user ignores first suggestion
 3. **Commands are shortcuts, not gates** — All work can be done without commands
 
+## Gotchas
+
+- **"Fix" is ambiguous** — "Fix the tests" could be trivial (typo) or complex (architecture bug). Always check scope before routing. Single file mentioned = quick, stack trace = investigate
+- **"Refactor" without scope is a trap** — Don't suggest `/phx:plan` for "refactor this function." Only suggest planning for cross-module or cross-context refactors
+- **Don't re-suggest after ignore** — If user ignores the first suggestion, they want to work directly. Never suggest a second time
+- **"Review" means different things** — "Review my changes" → `/phx:review`. "Review this PR" → `/phx:pr-review`. "Review this approach" → just discuss. Parse carefully
+
 ## Integration
 
 This skill is consulted at session start. It works alongside:

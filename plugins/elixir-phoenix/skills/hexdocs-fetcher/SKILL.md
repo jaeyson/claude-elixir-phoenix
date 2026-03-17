@@ -103,6 +103,13 @@ Write(
 )
 ```
 
+## Gotchas
+
+- **Rate limiting** — HexDocs doesn't rate-limit but aggressive crawling of many pages in a session may trigger Cloudflare protection. Fetch only what you need
+- **Package name vs module name** — URL uses package name (`hexdocs.pm/phoenix_live_view`) not module name. `Phoenix.LiveView` lives at `phoenix_live_view`, not `phoenix_liveview`
+- **Retired/renamed packages** — Some packages have been renamed (e.g., `phoenix_html` functions moved to `phoenix_live_view`). If a page 404s, the package may have been absorbed
+- **WebFetch prompt quality matters** — Vague prompts like "get the docs" return noise. Specific prompts like "extract all public functions with @spec" get useful results
+
 ## Tidewave Alternative
 
 If Tidewave MCP is available, prefer `mcp__tidewave__get_docs` for exact version-matched documentation:

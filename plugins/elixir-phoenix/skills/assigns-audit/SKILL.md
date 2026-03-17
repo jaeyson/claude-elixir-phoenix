@@ -99,6 +99,13 @@ For each assign, estimate memory footprint:
 | Binary (image) | Varies | Critical |
 | Full Ecto schema | ~1-5 KB each | Medium |
 
+## Gotchas
+
+- **`assign_async` hides memory** — Async assigns still consume memory once loaded. An `assign_async(:users, fn -> Repo.all(User) end)` with 10k users still bloats the socket after loading
+- **Streams aren't free** — Streams reduce server memory but increase client DOM size. A stream of 50k items can crash the browser. Use pagination with streams for truly large datasets
+- **Component assigns are copied** — Every `live_component` gets its own copy of passed assigns. Passing a large list to 10 components = 10x memory
+- **`temporary_assigns` reset on every render** — If you access a temporary assign after the first render, it returns the default value. This causes subtle bugs when re-rendering partial updates
+
 ## Usage
 
 Run `/lv:assigns path/to/live_view.ex` to generate an assigns inventory with memory estimates and optimization recommendations.
