@@ -5,6 +5,16 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`/phx:help` command** — Interactive command advisor that helps users pick the
+  right command, skill, or agent for their situation. Accepts optional description
+  (`/phx:help how do I debug this?`) or reads ambient context (git status, existing
+  plans). Asks clarifying questions when intent is ambiguous. Fills the gap between
+  `intent-detection` (automatic, non-interactive) and `/phx:intro` (static tutorial)
+
 ## [2.3.1] - 2026-03-12
 
 ### Changed

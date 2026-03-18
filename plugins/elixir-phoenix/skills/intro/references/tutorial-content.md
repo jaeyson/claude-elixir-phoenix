@@ -312,6 +312,7 @@ The plugin works best when all layers are active: `/phx:init` for persistent rul
 | `/phx:verify` | Run all quality checks |
 | `/phx:research <topic>` | Research with parallel workers, Tidewave-first |
 | `/phx:pr-review <PR#>` | Address PR review comments |
+| `/phx:help [description]` | Interactive command advisor — helps pick the right command |
 
 **Analysis:**
 

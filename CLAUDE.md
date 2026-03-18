@@ -600,6 +600,7 @@ When working on code, automatically consult relevant reference documentation bef
 
 | User Intent | Command |
 |-------------|---------|
+| "Which command should I use?" | `/phx:help` |
 | New to the plugin | `/phx:intro` |
 | Bug fix, debug | `/phx:investigate` |
 | Small UI fix, CSS tweak, config change | `/phx:quick` |
@@ -630,7 +631,7 @@ When working on code, automatically consult relevant reference documentation bef
 
 **Review → Follow-up Plan**: After `/phx:review`, if findings reveal scope gaps or missing coverage, use `/phx:plan .claude/plans/{slug}/reviews/{review}.md` to create a follow-up plan from review output.
 
-**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`
+**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`, `/phx:help`
 
 **Analysis**: `/ecto:n1-check`, `/lv:assigns`, `/phx:boundaries`, `/phx:trace`, `/phx:techdebt`
 
