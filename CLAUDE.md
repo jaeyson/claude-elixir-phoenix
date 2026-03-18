@@ -620,6 +620,7 @@ When working on code, automatically consult relevant reference documentation bef
 | PR review comments | `/phx:pr-review` |
 | Performance analysis | `/phx:perf` |
 | Project health | `/phx:audit` |
+| Reduce permission prompts | `/phx:permissions` |
 | Scan sessions for metrics | `/session-scan` |
 | Deep-analyze sessions | `/session-deep-dive` |
 | View session trends | `/session-trends` |
@@ -630,7 +631,7 @@ When working on code, automatically consult relevant reference documentation bef
 
 **Review → Follow-up Plan**: After `/phx:review`, if findings reveal scope gaps or missing coverage, use `/phx:plan .claude/plans/{slug}/reviews/{review}.md` to create a follow-up plan from review output.
 
-**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`
+**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`, `/phx:permissions`
 
 **Analysis**: `/ecto:n1-check`, `/lv:assigns`, `/phx:boundaries`, `/phx:trace`, `/phx:techdebt`
 

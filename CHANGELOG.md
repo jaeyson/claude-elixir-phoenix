@@ -7,6 +7,14 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **`/phx:permissions` skill** — Analyzes recent Claude Code sessions to identify
+  frequently-approved Bash commands, classifies them by risk (GREEN/YELLOW/RED),
+  and recommends safe additions to `settings.json`. Inspired by Intercom's
+  permission analyzer pattern. Includes 4 Iron Laws, `--days` and `--dry-run`
+  flags, and reference docs for risk classification and settings format
+
 ## [2.4.0] - 2026-03-19
 
 ### Fixed
