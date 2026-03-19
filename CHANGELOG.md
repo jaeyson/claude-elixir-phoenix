@@ -7,7 +7,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [2.4.0] - 2026-03-14
+## [2.4.0] - 2026-03-19
 
 ### Fixed
 
@@ -23,6 +23,17 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   main context (~80K tokens wasted in session c135330a)
 - **Audit: lean agent output** — Added output efficiency rule to audit
   subagent prompts (report only issues, not clean checks)
+
+- **Full: Stronger no-narration enforcement** — Post-PR validation (19
+  sessions, 5 days) showed 30% of messages still had "Let me now..."
+  preamble. Upgraded from soft suggestion to HARD rule with explicit
+  prohibited phrases and self-correction instruction
+- **Review agents: Verify before claiming** — Added mandatory rule to
+  elixir-reviewer and oban-specialist: never claim library behavior
+  without checking source/docs first. Prevents incorrect BLOCKER
+  findings that inject wrong code (confirmed: session f0242cf5 had
+  two agents independently make wrong Oban Pro snooze claim, causing
+  revert + user correction cycle)
 
 ### Changed
 

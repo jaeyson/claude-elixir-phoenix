@@ -109,9 +109,14 @@ For fully autonomous execution with Ralph Wiggum Loop:
    verification-runner (work phase already verified), skip iron-law-judge
    if PostToolUse hooks verified all files. For <200 lines changed,
    spawn only elixir-reviewer + security-analyzer (if auth files)
-7. **No narration in autonomous mode** — Execute tool calls directly.
-   Only narrate decisions, errors, or phase transitions. Do NOT
-   prefix every tool call with "Let me now..." or "Now I need to..."
+7. **ZERO narration in autonomous mode** — This is a HARD rule, not
+   a suggestion. NEVER write "Let me now...", "Now I need to...",
+   "I'll now...", "Next, I will...", or any preamble before a tool
+   call. Just call the tool. Only output text for: decisions that
+   need explanation, errors, or phase transitions. If you catch
+   yourself narrating, delete the text and just make the tool call.
+   (Post-PR validation: 30% of messages still violated this — the
+   instruction was too soft. This stronger wording is required.)
 
 ## References
 
