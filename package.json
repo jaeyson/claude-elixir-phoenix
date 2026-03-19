@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "markdownlint \"**/*.md\" --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad",
     "lint:fix": "markdownlint \"**/*.md\" --fix --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad",
+    "security:injection": "bash scripts/check-dynamic-injection.sh",
     "prepare": "husky || true"
   },
   "devDependencies": {

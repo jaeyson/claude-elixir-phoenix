@@ -7,6 +7,14 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **CI: Dynamic context injection check** — New security job in lint workflow
+  blocks PRs containing `!`backtick dynamic context injection syntax.
+  Script at `scripts/check-dynamic-injection.sh`, also available as
+  `npm run security:injection`. Prevents shell command execution via
+  skill/agent files (see Claude Code docs: skills#inject-dynamic-context)
+
 ## [2.4.0] - 2026-03-19
 
 ### Fixed
