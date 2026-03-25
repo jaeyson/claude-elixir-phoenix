@@ -1,6 +1,6 @@
 ---
 name: security
-description: "Enforce Elixir/Phoenix security patterns — authentication, authorization, OAuth, session handling, password hashing, access control, input validation, secrets management, CSRF/CSP/CORS headers, rate limiting, path traversal, SSRF prevention, token handling, XSS, SQL injection, atom exhaustion. Use when editing auth files, login/signup flows, RBAC, or API key handling. Skip for non-auth test helpers."
+description: "Provide secure coding patterns for Elixir/Phoenix — hash passwords with Bcrypt/Argon2, add OAuth providers, implement authorization plugs, prevent XSS with content escaping, add rate limiting, handle CSRF tokens, avoid SQL injection and atom exhaustion. Use when writing security-critical implementation code. NOT for writing tests about auth (testing), restructuring auth modules (phoenix-contexts), debugging login forms (investigate), or designing password schema columns (ecto-patterns)."
 effort: medium
 user-invocable: false
 ---

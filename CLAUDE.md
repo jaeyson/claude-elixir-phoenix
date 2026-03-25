@@ -634,6 +634,7 @@ When working on code, automatically consult relevant reference documentation bef
 | Performance analysis | `/phx:perf` |
 | Project health | `/phx:audit` |
 | Reduce permission prompts | `/phx:permissions` |
+| Iterative code improvement | `/phx:autoresearch` |
 | Scan sessions for metrics | `/session-scan` |
 | Deep-analyze sessions | `/session-deep-dive` |
 | View session trends | `/session-trends` |
@@ -644,7 +645,7 @@ When working on code, automatically consult relevant reference documentation bef
 
 **Review → Follow-up Plan**: After `/phx:review`, if findings reveal scope gaps or missing coverage, use `/phx:plan .claude/plans/{slug}/reviews/{review}.md` to create a follow-up plan from review output.
 
-**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`, `/phx:help`, `/phx:permissions`
+**Standalone**: `/phx:quick`, `/phx:full`, `/phx:investigate`, `/phx:verify`, `/phx:research`, `/phx:help`, `/phx:permissions`, `/phx:autoresearch`
 
 **Analysis**: `/ecto:n1-check`, `/lv:assigns`, `/phx:boundaries`, `/phx:trace`, `/phx:techdebt`
 
@@ -706,6 +707,7 @@ counter-intuitive finding, a useful pattern from research, or a before/after
 improvement stat — **append it to `lab/findings/interesting.jsonl`** immediately.
 
 Format (one JSON per line):
+
 ```json
 {"date": "2026-03-25", "category": "behavioral", "title": "Plan skill has 0% recall", "detail": "Haiku never routes 'build a chat feature' to plan skill despite description saying 'multi-file feature'. Use-case phrases needed, not technical terms.", "source": "trigger_scorer.py", "tags": ["autoresearch", "trigger", "description"]}
 ```

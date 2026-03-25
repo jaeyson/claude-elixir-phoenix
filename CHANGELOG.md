@@ -13,6 +13,11 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   right command, skill, or agent for their situation. Accepts optional description
   (`/phx:help how do I debug this?`) or reads ambient context (git status, existing
   plans). Asks clarifying questions when intent is ambiguous
+- **`/phx:autoresearch` command** — Iterative code improvement against a measurable metric.
+  Preset goals: `--goal credo` (fix issues), `--goal coverage` (improve tests),
+  `--goal warnings` (zero compile warnings). Read-only proposer agent suggests changes,
+  guard command prevents regressions, automatic rollback on failure. Plateau detection
+  auto-stops when improvement rate drops below 1%
 - **`/phx:permissions` skill** — Analyzes recent sessions to identify frequently-approved
   Bash commands, classifies by risk (GREEN/YELLOW/RED), recommends safe additions to
   `settings.json`. Includes `--days` and `--dry-run` flags

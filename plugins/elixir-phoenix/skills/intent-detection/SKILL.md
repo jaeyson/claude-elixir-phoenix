@@ -18,6 +18,7 @@ When user describes work WITHOUT specifying a `/phx:` command, analyze their int
 | "review", "check", "audit" code | Code review | `/phx:review` |
 | "fix" + small/specific scope | Quick fix | handle directly or `/phx:quick` |
 | "refactor", "clean up", "improve" | Refactoring | `/phx:plan` (needs scope) |
+| "reduce warnings", "fix credo", "improve coverage", "optimize iteratively" | Iterative improvement | `/phx:autoresearch` |
 | "research", "how to", "what's the best" | Research | `/phx:research` |
 | "evaluate", "compare", "adopt", "library", "should we use" | Library evaluation | `/phx:research --library` |
 | "test", "spec", "coverage" | Testing | handle directly or `/phx:plan` |

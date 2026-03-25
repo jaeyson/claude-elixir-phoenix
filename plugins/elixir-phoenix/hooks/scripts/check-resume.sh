@@ -11,6 +11,19 @@ for dir in .claude/plans/*/; do
     FOUND_PLAN=true
   fi
 done
+# Detect active autoresearch sessions
+for dir in .claude/autoresearch/*/; do
+  [ -f "${dir}config.json" ] || continue
+  if [ -f "${dir}results.jsonl" ]; then
+    DONE=$(wc -l < "${dir}results.jsonl" 2>/dev/null | tr -d ' ')
+    MAX=$(python3 -c "import json; print(json.load(open('${dir}config.json')).get('max_iterations', 15))" 2>/dev/null || echo 15)
+    if [ "$DONE" -lt "$MAX" ]; then
+      SLUG="$(basename "$dir")"
+      echo "↻ Active autoresearch '${SLUG}' (${DONE}/${MAX} iterations). Resume with: /phx:autoresearch --resume ${SLUG}"
+      FOUND_PLAN=true
+    fi
+  fi
+done
 if [ "$FOUND_PLAN" = false ]; then
-  echo "Elixir/Phoenix plugin loaded"
+  echo "Elixir/Phoenix plugin loaded — describe your task and I'll suggest the right workflow"
 fi
