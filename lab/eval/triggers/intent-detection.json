@@ -1,0 +1,15 @@
+{
+  "skill": "intent-detection",
+  "should_trigger": [
+    "add a new feature to handle payments",
+    "fix this bug in the user registration",
+    "review my latest changes before I commit",
+    "I need to investigate why tests are failing",
+    "refactor the notification module"
+  ],
+  "should_not_trigger": [
+    "/phx:plan add user auth",
+    "/phx:review security",
+    "what Elixir version are we using?"
+  ]
+}
