@@ -1,6 +1,6 @@
 ---
 name: phx:quick
-description: Small implementation tasks — load this whenever the user gives a direct instruction to add, update, fix, create, or change something in their Phoenix code. Covers single-file edits under 50 lines like adding a field validation, updating the router to add routes, fixing a component to handle a new prop, creating a migration to add a column, changing a controller response format to JSON, tweaking a template, or adjusting a changeset. Skip for bug investigation, code review, security audit, documentation, or large refactors.
+description: Implement small Phoenix changes without planning. Use when the user gives a direct instruction to add, update, fix, create, or change something — like adding a field validation, updating router routes, fixing a component for a new prop, creating a migration, or changing a controller response format. Single-file edits under 50 lines. Skip for bug investigation, code review, or large refactors.
 effort: low
 ---
 
