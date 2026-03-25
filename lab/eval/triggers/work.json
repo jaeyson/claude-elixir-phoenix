@@ -1,0 +1,17 @@
+{
+  "skill": "work",
+  "should_trigger": [
+    "Let's implement the plan tasks I created",
+    "Resume the work on user authentication",
+    "I'm ready to code the feature from my plan",
+    "Continue implementing the admin panel redesign",
+    "Execute all the tasks in my plan now"
+  ],
+  "should_not_trigger": [
+    "Create a plan for implementing payments \u2014 /phx:plan",
+    "Review the code for security issues \u2014 /phx:review",
+    "Explain the plan to me step by step \u2014 /phx:brief",
+    "What's the best way to query associations? \u2014 /phx:ecto-patterns",
+    "Why is the form validation failing? \u2014 /phx:investigate"
+  ]
+}

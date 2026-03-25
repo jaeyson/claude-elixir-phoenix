@@ -13,7 +13,7 @@ import os
 import sys
 
 from lab.eval.schemas import EvalDefinition, EvalDimension, EvalCheck, SkillScore, DimensionResult
-from lab.eval.dimensions import completeness, accuracy, conciseness, triggering, safety, clarity, specificity
+from lab.eval.dimensions import completeness, accuracy, conciseness, triggering, safety, clarity, specificity, behavioral
 
 DIMENSION_MODULES = {
     "completeness": completeness,
@@ -23,6 +23,7 @@ DIMENSION_MODULES = {
     "safety": safety,
     "clarity": clarity,
     "specificity": specificity,
+    "behavioral": behavioral,
 }
 
 PLUGIN_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "plugins", "elixir-phoenix")
@@ -68,6 +69,7 @@ def default_eval(skill_path: str) -> EvalDefinition:
                 EvalCheck(check_type="has_examples", description="Has code examples"),
                 EvalCheck(check_type="description_structure", description="Description has what+when"),
             ]),
+            "behavioral": EvalDimension(name="behavioral", weight=0.10, checks=[]),
         },
     )
 

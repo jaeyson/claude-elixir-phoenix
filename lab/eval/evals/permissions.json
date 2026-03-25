@@ -3,7 +3,7 @@
   "skill_path": "plugins/elixir-phoenix/skills/permissions/SKILL.md",
   "dimensions": {
     "completeness": {
-      "weight": 0.2,
+      "weight": 0.15,
       "checks": [
         {
           "type": "frontmatter_field",
@@ -26,6 +26,11 @@
           "desc": "Has Usage section"
         },
         {
+          "type": "frontmatter_field",
+          "field": "argument-hint",
+          "desc": "Has argument-hint"
+        },
+        {
           "type": "content_present",
           "pattern": "references/",
           "desc": "Has References section"
@@ -33,7 +38,7 @@
       ]
     },
     "accuracy": {
-      "weight": 0.15,
+      "weight": 0.1,
       "checks": [
         {
           "type": "valid_skill_refs",
@@ -50,13 +55,13 @@
       ]
     },
     "conciseness": {
-      "weight": 0.15,
+      "weight": 0.12,
       "checks": [
         {
           "type": "line_count",
           "target": 100,
-          "tolerance": 50,
-          "desc": "Near 100-line target (150 max)"
+          "tolerance": 85,
+          "desc": "Near 100-line target (185 max)"
         },
         {
           "type": "max_section_lines",
@@ -91,7 +96,7 @@
       ]
     },
     "safety": {
-      "weight": 0.1,
+      "weight": 0.08,
       "checks": [
         {
           "type": "has_iron_laws",
@@ -101,25 +106,34 @@
         {
           "type": "no_dangerous_patterns",
           "desc": "No unsafe code patterns"
+        },
+        {
+          "type": "content_present",
+          "pattern": "NEVER|MUST NOT|DO NOT|CRITICAL",
+          "desc": "Has explicit prohibitions or critical rules"
         }
       ]
     },
     "clarity": {
-      "weight": 0.15,
+      "weight": 0.13,
       "checks": [
         {
           "type": "action_density",
-          "min_ratio": 0.1,
-          "desc": "Action density (>10% actionable lines)"
+          "min_ratio": 0.25,
+          "desc": "Action density (>25% actionable lines)"
         },
         {
           "type": "no_duplication",
           "desc": "No cross-section duplication"
+        },
+        {
+          "type": "workflow_step_coverage",
+          "desc": "No missing workflow steps"
         }
       ]
     },
     "specificity": {
-      "weight": 0.15,
+      "weight": 0.12,
       "checks": [
         {
           "type": "specificity_ratio",
@@ -136,6 +150,10 @@
           "desc": "Description has what+when components"
         }
       ]
+    },
+    "behavioral": {
+      "weight": 0.2,
+      "checks": []
     }
   }
 }

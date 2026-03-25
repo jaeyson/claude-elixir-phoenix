@@ -192,13 +192,14 @@ def generate_eval(skill_name: str, skill_path: str) -> dict:
         "skill": skill_name,
         "skill_path": f"plugins/elixir-phoenix/skills/{skill_name}/SKILL.md",
         "dimensions": {
-            "completeness": {"weight": 0.20, "checks": completeness_checks},
-            "accuracy": {"weight": 0.15, "checks": accuracy_checks},
-            "conciseness": {"weight": 0.15, "checks": conciseness_checks},
+            "completeness": {"weight": 0.15, "checks": completeness_checks},
+            "accuracy": {"weight": 0.10, "checks": accuracy_checks},
+            "conciseness": {"weight": 0.12, "checks": conciseness_checks},
             "triggering": {"weight": 0.10, "checks": triggering_checks},
-            "safety": {"weight": 0.10, "checks": safety_checks},
-            "clarity": {"weight": 0.15, "checks": clarity_checks},
-            "specificity": {"weight": 0.15, "checks": specificity_checks},
+            "safety": {"weight": 0.08, "checks": safety_checks},
+            "clarity": {"weight": 0.13, "checks": clarity_checks},
+            "specificity": {"weight": 0.12, "checks": specificity_checks},
+            "behavioral": {"weight": 0.20, "checks": []},
         },
     }
 

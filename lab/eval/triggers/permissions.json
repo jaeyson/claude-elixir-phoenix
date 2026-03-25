@@ -1,0 +1,17 @@
+{
+  "skill": "permissions",
+  "should_trigger": [
+    "I've gotten ten permission prompts today. Can you auto-allow mix commands?",
+    "Too many permission checks slowing down my workflow. Fix permissions.",
+    "Analyze my sessions and recommend safe bash permissions for settings.json.",
+    "Mix test keeps asking for permission. Just allow it already.",
+    "Permission fatigue killing productivity. Stop asking and auto-allow mix."
+  ],
+  "should_not_trigger": [
+    "Review my code for N+1 queries \u2014 n1-check skill",
+    "My mix compile is failing with errors. Debug them. \u2014 investigate skill",
+    "Set up the plugin in my project. \u2014 init skill",
+    "Help me choose between plan and quick mode. \u2014 help skill",
+    "Check my code for performance bottlenecks. \u2014 perf skill"
+  ]
+}

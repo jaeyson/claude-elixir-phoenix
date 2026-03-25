@@ -3,7 +3,7 @@
   "skill_path": "plugins/elixir-phoenix/skills/elixir-idioms/SKILL.md",
   "dimensions": {
     "completeness": {
-      "weight": 0.2,
+      "weight": 0.15,
       "checks": [
         {
           "type": "frontmatter_field",
@@ -33,7 +33,7 @@
       ]
     },
     "accuracy": {
-      "weight": 0.15,
+      "weight": 0.1,
       "checks": [
         {
           "type": "valid_skill_refs",
@@ -50,7 +50,7 @@
       ]
     },
     "conciseness": {
-      "weight": 0.15,
+      "weight": 0.12,
       "checks": [
         {
           "type": "line_count",
@@ -91,7 +91,7 @@
       ]
     },
     "safety": {
-      "weight": 0.1,
+      "weight": 0.08,
       "checks": [
         {
           "type": "has_iron_laws",
@@ -105,7 +105,7 @@
       ]
     },
     "clarity": {
-      "weight": 0.15,
+      "weight": 0.13,
       "checks": [
         {
           "type": "action_density",
@@ -119,7 +119,7 @@
       ]
     },
     "specificity": {
-      "weight": 0.15,
+      "weight": 0.12,
       "checks": [
         {
           "type": "specificity_ratio",
@@ -136,6 +136,10 @@
           "desc": "Description has what+when components"
         }
       ]
+    },
+    "behavioral": {
+      "weight": 0.2,
+      "checks": []
     }
   }
 }

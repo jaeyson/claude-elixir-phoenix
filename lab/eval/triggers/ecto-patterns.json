@@ -1,0 +1,15 @@
+{
+  "skill": "ecto-patterns",
+  "should_trigger": [
+    "I'm using float for money in the schema. Fix that.",
+    "Write a query to preload user posts and comments together",
+    "Migration for users table with unique email constraint",
+    "Why isn't my changeset validating the email field correctly?",
+    "How do I use Ecto.Multi for atomic transactions?"
+  ],
+  "should_not_trigger": [
+    "Scan my codebase for N+1 queries and fix them \u2014 n1-check",
+    "My LiveView form isn't updating when socket assigns change \u2014 liveview-patterns",
+    "Audit the project for technical debt and code quality \u2014 techdebt"
+  ]
+}

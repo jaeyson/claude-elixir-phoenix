@@ -1,0 +1,20 @@
+{
+  "skill": "quick",
+  "should_trigger": [
+    "Add a required validation to the email field",
+    "Update the router to add authentication to admin routes",
+    "Fix the component to handle the new prop",
+    "Create a migration to add a status field to users",
+    "Change the controller response format to JSON"
+  ],
+  "should_not_trigger": [
+    "Why isn't my form submitting correctly \u2014 belongs to investigate (bug report)",
+    "Refactor the user context to separate concerns \u2014 belongs to plan (large refactor)",
+    "Check my authentication code for security issues \u2014 belongs to security (security review)",
+    "Fix the component that's not rendering at all \u2014 belongs to investigate (bug)",
+    "What command should I use for this task \u2014 belongs to help (navigation)",
+    "Validate my schema design before implementation \u2014 belongs to plan (design validation)",
+    "Check for N+1 queries in the user loader \u2014 belongs to n1-check (specific analysis)",
+    "Generate API documentation for this endpoint \u2014 belongs to document (documentation)"
+  ]
+}

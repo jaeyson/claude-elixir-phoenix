@@ -1,0 +1,17 @@
+{
+  "skill": "security",
+  "should_trigger": [
+    "Add OAuth login with GitHub",
+    "Hash and validate passwords securely",
+    "Implement rate limiting on the login endpoint",
+    "Prevent XSS in user-generated content",
+    "Add admin authorization checks to my routes"
+  ],
+  "should_not_trigger": [
+    "Write tests for my login flow (testing)",
+    "Extract auth logic into a context module (phoenix-contexts)",
+    "Debug: my login form submission isn't working (investigate)",
+    "Design the users table with encrypted password field (ecto-patterns)",
+    "Run a security audit on the whole app (audit)"
+  ]
+}
