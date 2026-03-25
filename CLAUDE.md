@@ -698,3 +698,19 @@ When adding, removing, or renaming commands/skills/agents, check if
 `plugins/elixir-phoenix/skills/intro/references/tutorial-content.md` needs updating.
 The tutorial is new users' first impression — stale command references erode trust.
 Quick check: does the cheat sheet in Section 4 still match reality?
+
+### Interesting Findings Log
+
+When you discover something noteworthy during work — a surprising metric, a
+counter-intuitive finding, a useful pattern from research, or a before/after
+improvement stat — **append it to `lab/findings/interesting.jsonl`** immediately.
+
+Format (one JSON per line):
+```json
+{"date": "2026-03-25", "category": "behavioral", "title": "Plan skill has 0% recall", "detail": "Haiku never routes 'build a chat feature' to plan skill despite description saying 'multi-file feature'. Use-case phrases needed, not technical terms.", "source": "trigger_scorer.py", "tags": ["autoresearch", "trigger", "description"]}
+```
+
+Categories: `behavioral`, `performance`, `research`, `pattern`, `bug`, `metric`, `user-insight`
+
+This log feeds blog posts, release notes, and Twitter threads. Don't filter —
+write anything that made you think "that's interesting". The file is gitignored.
