@@ -22,7 +22,6 @@ propose one mutation -> eval -> keep/revert -> repeat.
 /lab:autoresearch --skill review            # Focus on one skill
 /lab:autoresearch --strategy sweep          # Process all skills alphabetically
 /lab:autoresearch --dry-run                 # Show what would change, don't commit
-/lab:autoresearch --max-iterations 50       # Override default limit (20)
 ```
 
 For overnight runs:
@@ -31,122 +30,98 @@ For overnight runs:
 /loop 5m /lab:autoresearch --strategy sweep --max-iterations 200
 ```
 
-## Arguments
-
-| Arg | Default | Description |
-|-----|---------|-------------|
-| `--skill` | (auto) | Target specific skill name |
-| `--strategy` | `targeted` | `targeted` (weakest first), `sweep` (alphabetical), `random` |
-| `--dry-run` | false | Propose mutation but don't apply or commit |
-| `--max-iterations` | 20 | Hard stop after N iterations |
-
 ## Iron Laws
 
-1. **ONE mutation per iteration** — if description needs "and", split into two iterations
+1. **ONE mutation per iteration** — if description needs "and", split into two
 2. **NEVER mutate read-only files** — check program.md before every write
-3. **COMMIT before eval** — enables clean revert via `git checkout --`
-4. **EVAL is deterministic** — always use `python3 -m lab.eval.scorer`, never LLM-judge
-5. **REVERT on regression** — no exceptions, no "but it looks better"
-6. **LOG every iteration** — append to results.tsv even on discard
+3. **EVAL is deterministic** — always use the wrapper script, never LLM-judge
+4. **REVERT on regression OR checks failure** — no exceptions
+5. **LOG every iteration** — use `keep` or `revert` command (never skip)
+6. **CHECK ideas.md before proposing** — don't rediscover known optimizations
+
+## Wrapper Script Commands
+
+All eval/git/journal operations go through ONE script. Do NOT run these manually.
+
+```bash
+# Find the weakest skill+dimension
+python3 lab/autoresearch/scripts/run-iteration.py target --strategy targeted
+
+# Score a skill (before mutation, to get baseline)
+python3 lab/autoresearch/scripts/run-iteration.py score <skill-name>
+
+# After mutation: score + checks + compare → verdict (KEEP or REVERT)
+python3 lab/autoresearch/scripts/run-iteration.py eval <skill-name>
+
+# Act on verdict:
+python3 lab/autoresearch/scripts/run-iteration.py keep <skill> <dim> <old> <new> \
+  --desc "what changed" --asi '{"hypothesis": "why", "mechanism": "how"}'
+
+python3 lab/autoresearch/scripts/run-iteration.py revert <skill> <dim> <old> <new> \
+  --desc "what was attempted" --asi '{"hypothesis": "why", "regression": "what broke", "avoid": "do not retry this"}'
+
+# Check overall progress
+python3 lab/autoresearch/scripts/run-iteration.py status
+```
 
 ## Core Loop (ONE iteration)
-
-Execute these steps in order. Do NOT skip steps.
 
 ### Step 1: Read State
 
 1. Read `lab/autoresearch/program.md` (goals, mutable surface, rules)
-2. Read `lab/autoresearch/autoresearch.md` if it exists (iteration count, scores, stuck skills)
-3. Read last 5 lines of `lab/autoresearch/results.tsv` if it exists (recent history)
+2. Read `lab/autoresearch/ideas.md` if it exists (deferred optimizations)
+3. Run: `python3 lab/autoresearch/scripts/run-iteration.py status`
 
 ### Step 2: Select Target
 
-**Targeted strategy** (default):
+Run: `python3 lab/autoresearch/scripts/run-iteration.py target --strategy targeted`
 
-- Read current scores from autoresearch.md (or run scorer on all target skills)
-- Find skill+dimension with LOWEST score
-- Skip skills in the "stuck" list
+Parse the JSON: `skill`, `dimension`, `failing_checks`. If `all_perfect` → STOP.
 
-**Sweep strategy**: Process skills alphabetically, improve weakest dimension per skill.
-**Random strategy**: Pick random skill + random dimension.
+### Step 3: Read + Propose
 
-### Step 3: Read Current Skill
+1. Read target SKILL.md and its references/ listing
+2. Read eval definition from `lab/eval/evals/{skill}.json`
+3. Check `ideas.md` for deferred ideas about this skill
+4. Check recent journal entries for prior failures on this skill (avoid repeats)
+5. Consult `${CLAUDE_SKILL_DIR}/references/mutation-strategies.md`
+6. Propose exactly ONE change targeting the failing checks
 
-Read the target `SKILL.md` and its `references/` directory listing.
-Read the eval definition from `lab/eval/evals/{skill}.json` if it exists.
-Identify which specific checks are failing (from the scorer output).
-
-### Step 4: Propose ONE Mutation
-
-Based on the failing checks, propose exactly ONE change.
-Consult `${CLAUDE_SKILL_DIR}/references/mutation-strategies.md` for mutation types.
-
-Rules:
-
-- Target the specific failing check(s) for the weakest dimension
-- Check recent results.tsv — do NOT retry a mutation that was already discarded
-- Prefer deletions/compressions over additions (simplicity criterion)
-- If last discard was on this skill: analyze WHY it failed before proposing
-
-### Step 5: Apply or Dry-Run
-
-**If `--dry-run`**: Print the proposed change and expected impact. STOP.
-
-**If real run**:
+### Step 4: Apply + Evaluate
 
 1. Apply the mutation via Edit tool
-2. Run: `python3 -m lab.eval.scorer {skill_path}`
-3. Parse the JSON output — extract composite score
+2. Run: `python3 lab/autoresearch/scripts/run-iteration.py eval <skill-name>`
+3. Parse JSON → check `verdict` field
 
-### Step 6: Keep or Revert
+### Step 5: Keep or Revert
 
-Compare `new_composite` against `previous_best_composite` (from autoresearch.md):
-
-**If improved or tied** (keep):
+**If verdict is KEEP**:
 
 ```bash
-git add plugins/elixir-phoenix/skills/{skill}/
-git commit -m "autoresearch: {skill} {dimension} {old:.3f}->{new:.3f}"
+python3 lab/autoresearch/scripts/run-iteration.py keep <skill> <dim> <old> <new> \
+  --desc "..." --asi '{"hypothesis": "...", "mechanism": "..."}'
 ```
 
-**If regressed** (revert):
+**If verdict is REVERT**:
 
 ```bash
-git checkout -- plugins/elixir-phoenix/skills/{skill}/
+python3 lab/autoresearch/scripts/run-iteration.py revert <skill> <dim> <old> <new> \
+  --desc "..." --asi '{"hypothesis": "...", "regression": "...", "avoid": "..."}'
 ```
 
-### Step 7: Journal
+### Step 6: Ideas Backlog
 
-Append one line to `lab/autoresearch/results.tsv`:
+If during analysis you discovered a promising optimization you can't act on now:
 
-```
-{iteration}\t{skill}\t{dimension}\t{mutation_type}\t{old_composite}\t{new_composite}\t{kept}\t{timestamp}\t{description}
-```
+- Append it to `lab/autoresearch/ideas.md` as a bullet
+- On next resume: prune stale/tried ideas, experiment with the rest
 
-### Step 8: Update State
+### Step 7: Continue or Stop
 
-Write `lab/autoresearch/autoresearch.md` with:
-
-- Current iteration number
-- Per-skill best scores
-- Consecutive discard count
-- Stuck skills list
-- Last mutation summary
-
-### Step 9: Continue or Stop
-
-Check stop conditions from program.md:
-
-- All targets >= 0.95? Print "AUTORESEARCH_COMPLETE" and stop
-- Max iterations reached? Print "AUTORESEARCH_COMPLETE" and stop
-- 50 consecutive discards? Print "AUTORESEARCH_STUCK" and stop
-
-Otherwise: **immediately start Step 1 again** (next iteration).
-
-## Output Quarantine
-
-CRITICAL: When running the scorer, only parse the composite score from JSON output.
-Do NOT paste full scorer output into context (wastes tokens over 50+ iterations).
+- All targets >= 0.95? Print "AUTORESEARCH_COMPLETE"
+- Max iterations reached? Print "AUTORESEARCH_COMPLETE"
+- 50 consecutive discards? Print "AUTORESEARCH_STUCK"
+- Otherwise: immediately start Step 1 again
 
 ## References
 
