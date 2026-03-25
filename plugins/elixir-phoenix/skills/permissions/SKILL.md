@@ -26,7 +26,7 @@ commands, classify them by risk, and write safe ones to `settings.json`.
 
 ## Iron Laws
 
-1. **Never auto-allow RED commands** — `rm`, `sudo`, `curl|wget` piped to shell, `chmod 777`, `kill -9`, `docker rm` require manual approval every time
+1. **NEVER auto-allow RED commands** — `rm`, `sudo`, `curl|wget` piped to shell, `chmod 777`, `kill -9`, `docker rm` require manual approval every time
 2. **Evidence-based only** — Only recommend commands the user has actually approved in recent sessions, never guess or suggest commands speculatively
 3. **Show before writing** — Always present the full proposed `settings.json` diff to the user and get explicit confirmation before modifying settings
 4. **Preserve existing permissions** — Merge with current settings, never overwrite user's manually configured permissions
