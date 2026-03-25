@@ -1,0 +1,59 @@
+# Autoresearch Program — Elixir/Phoenix Plugin Skills
+
+## Goals (ordered by priority)
+
+1. Fix accuracy issues: stale cross-references, missing agents/skills
+2. Improve conciseness: compress bloated sections, move detail to references/
+3. Strengthen Iron Laws: add missing prohibitions, ensure min coverage
+4. Improve triggering: add domain keywords to generic descriptions
+5. Fill completeness gaps: missing sections, undocumented flags
+6. Improve clarity: raise action density, remove cross-section duplication
+7. Improve specificity: add code examples, concrete patterns over vague guidance
+
+## Mutable Surface (ONLY these files)
+
+- `plugins/elixir-phoenix/skills/*/SKILL.md`
+- `plugins/elixir-phoenix/skills/*/references/*.md`
+
+## Read-Only (NEVER mutate)
+
+- `lab/**` (eval infrastructure, this file, scripts)
+- `plugins/elixir-phoenix/agents/**`
+- `plugins/elixir-phoenix/hooks/**`
+- `plugins/elixir-phoenix/.claude-plugin/**`
+- `CLAUDE.md`
+- `CHANGELOG.md`
+- `README.md`
+
+## Scoring
+
+- 7 dimensions: completeness, accuracy, conciseness, triggering, safety, clarity, specificity
+- Composite = weighted average (0.20, 0.15, 0.15, 0.10, 0.10, 0.15, 0.15)
+- Eval definitions: `lab/eval/evals/{skill}.json` (skill-specific) or default
+- Scorer: `python3 -m lab.eval.scorer {skill_path}`
+
+## Keep Threshold
+
+Keep if `new_composite >= previous_best_composite`.
+On exact tie: keep (prefer newer — likely simpler or more accurate).
+
+## Stop Conditions
+
+- All target skills at composite >= 0.95
+- 10 consecutive discards on same skill -> skip that skill
+- 50 total consecutive discards -> stop entirely
+- Human interrupts (Ctrl+C)
+
+## Anti-Thrashing Rules
+
+- Same skill mutated 5+ times without improvement: skip for 10 iterations
+- If composite hasn't improved in 20 iterations: switch strategy
+- NEVER revert a mutation that improved one dimension unless another regressed by MORE
+- After a discard: analyze WHY before next attempt on same skill (ReflexiCoder)
+- NEVER retry the exact same mutation type on the same section twice
+
+## Simplicity Criterion
+
+A 0.01 improvement that adds 10 lines of content? Probably not worth it.
+A 0.01 improvement from removing redundancy? Definitely keep.
+All else equal, shorter is better.

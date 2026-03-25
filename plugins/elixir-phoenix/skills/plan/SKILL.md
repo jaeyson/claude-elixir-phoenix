@@ -51,7 +51,8 @@ structured plan with checkboxes.
 7. **Breadboard** (LiveView) — System map for multi-page features
 8. **Completeness check** — MANDATORY when planning from review
 9. **Split decision** — One plan or multiple, concrete options
-10. **Generate plan** — Checkboxes, phased tasks, code patterns
+10. **Generate plan** — Checkboxes, phased tasks, code patterns.
+    Also create `plans/{slug}/scratchpad.md` for decisions and dead-ends
 11. **Self-check** (deep only) — Three questions in Risks section
 12. **Present and ask** — STOP, show summary, let user decide
 

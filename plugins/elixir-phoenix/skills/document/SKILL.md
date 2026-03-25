@@ -1,6 +1,6 @@
 ---
 name: phx:document
-description: Generate documentation for implemented features — @moduledoc, @doc, README updates, ADRs. Use after implementing new modules or features to ensure proper documentation coverage. Run after /phx:review passes or whenever the user asks to document their code.
+description: Generate Elixir documentation for implemented Phoenix features — @moduledoc, @doc, README updates, ADRs. Covers context modules, liveview components, ecto schemas, and plug pipelines. Use after implementing new modules or completing a review to ensure proper documentation coverage.
 effort: low
 argument-hint: [plan-file OR feature-name]
 ---
@@ -23,6 +23,7 @@ Generate documentation for newly implemented features.
 2. **@moduledoc on every public module** — Undocumented modules accumulate quickly and create onboarding friction for new team members
 3. **ADRs capture the "why", not the "what"** — Code shows what was built; ADRs explain why this approach was chosen over alternatives
 4. **Match @doc to function's public API** — Document parameters, return values, and edge cases; callers shouldn't need to read the implementation
+5. **DO NOT add @doc to untested code** — documentation implies a stable contract; document only after tests confirm the function behaves as described
 
 ## What Gets Documented
 

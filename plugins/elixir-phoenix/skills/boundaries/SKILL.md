@@ -86,6 +86,7 @@ mix xref graph --format cycles
 2. **Schemas are pure data** - No side effects, no Repo calls in schema modules
 3. **Contexts own their schemas** - Don't import schemas from other contexts
 4. **Explicit dependencies only** - Cross-context calls must be intentional
+5. **DO NOT refactor context boundaries without running `mix xref` first** — Refactoring without dependency data creates new violations; always map the dependency graph before moving modules
 
 ## Dependency Rules
 

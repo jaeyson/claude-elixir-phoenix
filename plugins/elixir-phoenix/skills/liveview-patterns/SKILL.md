@@ -1,6 +1,6 @@
 ---
 name: liveview-patterns
-description: LiveView lifecycle & real-time UI. For *_live.ex, mount, handle_event, handle_params, handle_info, assign_async, streams, PubSub, phx-change/phx-submit, uploads, JS hooks, LiveComponent, push_patch, on_mount, socket assigns. NOT for controllers, REST APIs, Ecto, or plain Phoenix.Component.
+description: "Reference LiveView lifecycle and real-time UI patterns — mount, handle_event, handle_params, handle_info, assign_async, streams, PubSub, phx-change/phx-submit, uploads, JS hooks, LiveComponent, push_patch, on_mount, socket assigns. Use when editing *_live.ex files or building real-time features. NOT for controllers, REST APIs, or Ecto."
 effort: medium
 user-invocable: false
 ---

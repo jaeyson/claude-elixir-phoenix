@@ -14,6 +14,7 @@ Complete verification workflow for Elixir/Phoenix projects. Run this after makin
 2. **Fix issues immediately** — Batching fixes hides which change caused which failure, making debugging harder than the original problem
 3. **Warnings are errors** — Unused variables and deprecated calls accumulate silently until they mask real problems; `--warnings-as-errors` catches them early
 4. **Full Dialyzer before PR** — Type mismatches caught in review cost 10x more than catching them locally; Dialyzer finds issues tests often miss
+5. **NEVER report success without showing actual command output** — Always include the terminal output proving each step passed; "should work" is not verification
 
 ## Verification Sequence
 

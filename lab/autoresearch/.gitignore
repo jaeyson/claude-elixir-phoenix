@@ -1,0 +1,5 @@
+# Runtime artifacts (session-specific, not versioned)
+results.tsv
+autoresearch.md
+archive/
+ideas.md
