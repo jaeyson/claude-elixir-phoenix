@@ -7,6 +7,14 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **`/phx:help` command** — Interactive command advisor that helps users pick the
+  right command, skill, or agent for their situation. Accepts optional description
+  (`/phx:help how do I debug this?`) or reads ambient context (git status, existing
+  plans). Asks clarifying questions when intent is ambiguous. Fills the gap between
+  `intent-detection` (automatic, non-interactive) and `/phx:intro` (static tutorial)
+
 ### Changed
 
 - **Planning orchestrator Phase 1c** — Expanded research cache reuse from 3 lines
