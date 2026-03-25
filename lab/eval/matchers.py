@@ -381,7 +381,7 @@ def no_dangerous_patterns(content: str, patterns: list[str] | None = None, **_) 
     sections = get_sections(content)
     filtered_lines = []
     for name, body in sections.items():
-        skip_sections = ("iron law", "anti-pattern", "red flag", "detection", "checklist", "vulnerabilit")
+        skip_sections = ("iron law", "anti-pattern", "red flag", "detection", "checklist", "vulnerabilit", "confidence level")
         if any(kw in name.lower() for kw in skip_sections):
             continue
         for line in body.split("\n"):

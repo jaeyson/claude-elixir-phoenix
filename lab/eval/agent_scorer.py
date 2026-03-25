@@ -71,7 +71,9 @@ def score_agent(agent_path: str) -> SkillScore:
     target = 535 if is_orchestrator else 300
     tolerance = 65 if is_orchestrator else 65
     p_lc, e_lc = line_count(content, target=target, tolerance=tolerance, skill_path=agent_path)
-    p_ms, e_ms = max_section_lines(content, max=60 if is_orchestrator else 45)
+    # Agents have reference checklists (Red Flags) and inline subagent prompts
+    # Orchestrators embed ~80 lines × N agents = need 100+ line sections
+    p_ms, e_ms = max_section_lines(content, max=100 if is_orchestrator else 75)
     dimensions["conciseness"] = DimensionResult.from_assertions("conciseness", [
         AssertionResult(id="conc-lines", check_type="line_count",
             description=f"Under {target + tolerance} lines", passed=p_lc, evidence=e_lc),
