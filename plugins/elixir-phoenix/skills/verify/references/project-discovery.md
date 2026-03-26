@@ -163,16 +163,28 @@ When running these commands, ensure the correct `MIX_ENV` is used.
 
 ## Decision Logic
 
+### IMPORTANT: Validate before adopting
+
+Before using ANY discovered alias or composite command:
+
+1. **Check `mix.lock`** — dependency must be fetched, not just in `mix.exs`
+2. **Try running it** — if exit code != 0 with "not found" or dep error, fall back
+3. **Log fallback**: "mix check failed (not installed locally), using individual steps"
+
+Common failure: `mix.exs` has `{:ex_check, ...}` but user hasn't run `mix deps.get`
+or the dep is only available in CI (`only: :ci`).
+
 ### Priority 1: ex_check + .check.exs
 
-1. Run `mix check` — handles everything configured
-2. Check if E2E test commands exist
-3. Ask user if they want to run E2E tests
+1. Verify `:ex_check` is in `mix.lock` (not just `mix.exs`)
+2. Try `mix check` — if it fails, fall back to Priority 3
+3. Check if E2E test commands exist
+4. Ask user if they want to run E2E tests
 
 ### Priority 2: Composite alias (mix ci, mix precommit)
 
 1. Map which steps the alias covers
-2. Run the alias
+2. Try running the alias — if it fails, fall back to Priority 3
 3. Run uncovered steps individually
 4. Offer E2E tests
 

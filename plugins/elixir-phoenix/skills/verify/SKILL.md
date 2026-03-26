@@ -42,11 +42,17 @@ Strategy: Running `mix check` then asking about E2E
 
 ## Verification Sequence
 
-**If `ex_check` installed + `.check.exs` exists**: Run `mix check`. It handles ordering and parallelism. Skip to Step 7 (test offer).
+**CRITICAL**: Before using ANY discovered alias or composite command, verify it works:
 
-**If composite alias found** (e.g., `mix ci`): Run it, then run uncovered steps. Skip to Step 7.
+1. Check the dependency is in `mix.lock` (not just `mix.exs`) — deps may not be fetched
+2. Run the command — if it fails with "command not found" or dependency error, fall back to individual steps
+3. Log the fallback: "mix check failed (ex_check not installed?), falling back to individual steps"
 
-**Otherwise**: Run individual steps, skipping unavailable tools.
+**If `ex_check` installed + `.check.exs` exists**: Try `mix check`. If it fails, fall back to individual steps.
+
+**If composite alias found** (e.g., `mix ci`, `mix precommit`): Try it. If it fails, fall back to individual steps.
+
+**Otherwise** (or after fallback): Run individual steps, skipping unavailable tools.
 
 ### Step 1: Compile
 
