@@ -8,10 +8,10 @@
     "Add admin authorization checks to my routes"
   ],
   "should_not_trigger": [
-    "Write tests for my login flow (testing)",
-    "Extract auth logic into a context module (phoenix-contexts)",
-    "Debug: my login form submission isn't working (investigate)",
-    "Design the users table with encrypted password field (ecto-patterns)",
-    "Run a security audit on the whole app (audit)"
+    "Add pagination to the product listing page",
+    "Refactor the notification context to use PubSub",
+    "Fix N+1 query in the dashboard LiveView",
+    "Write a migration to add a tags column to posts",
+    "Deploy the app to Fly.io with a Dockerfile"
   ]
 }
