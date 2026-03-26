@@ -99,10 +99,30 @@ jobs:
       - name: npm audit
         run: npm audit --omit=dev || true
 
+  test:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    needs: python
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        run: python3 -m pytest lab/eval/tests/ -v --tb=short
+
   eval:
     name: Skill & Agent Eval
     runs-on: ubuntu-latest
-    needs: [lint, python]
+    needs: [lint, python, test]
 
     steps:
       - name: Checkout
