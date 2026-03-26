@@ -294,12 +294,46 @@ claude --plugin-dir ./plugins/elixir-phoenix
 npm install  # Pre-commit hooks + linting
 ```
 
-### Linting
+### Quality Commands (use `make`)
 
 ```bash
-npm run lint       # Check all markdown
-npm run lint:fix   # Auto-fix issues
+make help          # Show all commands
+make lint          # Lint markdown
+make lint-fix      # Auto-fix lint
+make test          # 52 pytest tests for eval framework
+make eval          # Quick: lint + score changed skills/agents only
+make eval-all      # Score all 41 skills + 21 agents
+make eval-fix      # Auto-fix lint + show failures + suggest autoresearch
+make ci            # Full CI pipeline: lint + test + eval
 ```
+
+### Eval Framework (lab/eval/)
+
+The plugin has a deterministic 8-dimension scoring system for skills and
+5-dimension scoring for agents. **Run `make eval` after every skill/agent edit.**
+
+**When editing skills/agents, ALWAYS verify your changes pass eval:**
+1. Edit the skill or agent file
+2. Run `make eval` — checks only changed files
+3. If FAIL: run `make eval-fix` to see exact failures and get fix suggestions
+4. Fix the issues and re-run until PASS
+
+**What eval checks** (skills — 8 dimensions):
+- completeness (sections, Iron Laws, frontmatter)
+- accuracy (cross-references valid)
+- conciseness (line counts, section limits)
+- triggering (description keywords, "Use when..." structure)
+- safety (Iron Laws, prohibitions, no dangerous patterns)
+- clarity (action density, no duplication, step coverage)
+- specificity (code examples, concrete vs vague)
+- behavioral (trigger accuracy via cached haiku tests)
+
+**What eval checks** (agents — 5 dimensions):
+- completeness (frontmatter: name, description, tools, model, effort)
+- accuracy (preloaded skills exist, tools valid)
+- conciseness (line limits per agent type)
+- safety (bypassPermissions, read-only enforcement)
+- consistency (model matches effort level)
 
 ## Size Guidelines
 
