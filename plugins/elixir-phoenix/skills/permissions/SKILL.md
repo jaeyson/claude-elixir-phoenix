@@ -6,133 +6,82 @@ argument-hint: "[--days=14] [--dry-run]"
 
 # Permission Analyzer
 
-Analyze recent session history to identify frequently-approved Bash
-commands, classify them by risk, and write safe ones to `settings.json`.
+Scan recent session transcripts to find Bash commands you keep approving,
+cross-reference with current `settings.json`, and recommend adding the missing ones.
+
+**Primary goal**: Discover MISSING permissions from actual usage.
+**Secondary goal**: Clean up redundant/garbage entries.
 
 ## Usage
 
-```
-/phx:permissions                # Analyze last 14 days, apply safe commands
-/phx:permissions --days=30      # Analyze last 30 days
-/phx:permissions --dry-run      # Show recommendations without applying
-```
+`/phx:permissions [--days=14] [--dry-run]` — Scans session JSONL files, finds uncovered Bash commands, classifies risk, and recommends `settings.json` changes. Use `--dry-run` to preview without writing.
 
 ## Arguments
 
-`$ARGUMENTS` — Optional flags:
-
-- `--days=N` — How many days of history to scan (default: 14)
-- `--dry-run` — Preview recommendations without writing to settings.json
+`$ARGUMENTS` — `--days=N` (default: 14), `--dry-run` (preview only).
 
 ## Iron Laws
 
-1. **NEVER auto-allow RED commands** — `rm`, `sudo`, `curl|wget` piped to shell, `chmod 777`, `kill -9`, `docker rm` require manual approval every time
-2. **Evidence-based only** — Only recommend commands the user has actually approved in recent sessions, never guess or suggest commands speculatively
-3. **Show before writing** — Always present the full proposed `settings.json` diff to the user and get explicit confirmation before modifying settings
-4. **Preserve existing permissions** — Merge with current settings, never overwrite user's manually configured permissions
+1. **NEVER auto-allow RED** — `rm`, `sudo`, `kill`, `curl|sh`, `mix ecto.reset`, `git push --force`, `chmod 777`
+2. **Evidence-based only** — Only recommend commands actually approved in sessions
+3. **Show before writing** — Present full diff, get explicit confirmation
+4. **Preserve existing** — Merge, never overwrite
 
 ## Risk Classification
 
-| Level | Category | Examples | Action |
-|-------|----------|----------|--------|
-| GREEN | Read-only, tests | `ls`, `cat`, `grep`, `mix test`, `mix compile`, `mix format`, `mix credo`, `git status`, `git log`, `git diff` | Auto-recommend |
-| YELLOW | Writes, git ops | `git add`, `git commit`, `git push`, `mkdir`, `mix ecto.migrate`, `mix deps.get`, `npm install` | Recommend with note |
-| RED | Destructive | `rm`, `sudo`, `kill`, `curl\|sh`, `mix ecto.reset`, `git push --force`, `chmod` | Never recommend |
+| Level | Examples | Action |
+|-------|----------|--------|
+| GREEN | `ls`, `cat`, `grep`, `tail`, `which`, `mkdir`, `cd`, `mix test/compile/credo/format`, `git status/log/diff` | Auto-recommend |
+| YELLOW | `git add/commit/push`, `mix ecto.migrate`, `mix deps.get`, `npm install`, `docker build/run`, `source`, `mise exec` | Recommend with note |
+| RED | `rm -rf`, `sudo`, `kill`, `curl|sh`,`mix ecto.reset/drop`,`git push --force`,`git reset --hard` | Never recommend |
 
 ## Workflow
 
-### Step 1: Parse `--days` and `--dry-run` from `$ARGUMENTS`
+### Step 1: Extract Bash Commands from Session JSONL Files
 
-Default: `--days=14`, `--dry-run=false`.
+Run the extraction script from `${CLAUDE_SKILL_DIR}/references/extraction-script.md`.
+This scans all project JSONL files from the last N days, checks each Bash command
+against current `settings.json` patterns, and reports uncovered commands with counts.
 
-### Step 2: Scan Session Transcripts
+**IMPORTANT**: Run this FIRST. Do NOT skip to settings cleanup.
 
-Find recent sessions and extract approved Bash commands:
+### Step 2: Classify and Recommend
 
-```bash
-# Find session directories from last N days
-find ~/.claude/projects/ -name "*.jsonl" -mtime -${DAYS} 2>/dev/null
+For each uncovered command from Step 1 output:
 
-# Also check for session transcripts
-find ~/.claude/ -name "transcript*.jsonl" -mtime -${DAYS} 2>/dev/null
-```
+1. **Classify** as GREEN / YELLOW / RED per table above
+2. **Generate permission pattern**: normalize to `Bash(base_command:*)` format
+   - `mkdir -p` (94x) → `Bash(mkdir:*)`
+   - `mise exec` (39x) → `Bash(mise:*)`
+   - `tail -5` (20x) → `Bash(tail:*)`
+3. **Check for redundancy**: skip if a broader existing pattern covers it
+4. **Also scan for garbage** in current settings: `Bash(done)`, `Bash(fi)`,
+   `Bash(__NEW_LINE_*)`, partial heredocs, entries covered by broader patterns
 
-Parse each session file for Bash tool calls that were approved
-(not denied). Extract the command string from each.
-
-### Step 3: Classify Commands
-
-For each unique command pattern:
-
-1. **Normalize** — Strip arguments to get the base command pattern
-   (e.g., `mix test test/foo_test.exs` → `mix test`)
-2. **Classify** — Assign GREEN / YELLOW / RED per the table above
-3. **Count** — Track approval frequency
-
-### Step 4: Read Current Settings
-
-```bash
-cat ~/.claude/settings.json 2>/dev/null || echo "{}"
-cat .claude/settings.json 2>/dev/null || echo "{}"
-cat .claude/settings.local.json 2>/dev/null || echo "{}"
-```
-
-Parse existing `allowedTools` to avoid duplicating.
-
-### Step 5: Generate Recommendations
-
-Present a table to the user:
+Present a combined table:
 
 ```
-## Permission Recommendations (last {N} days)
+## Permission Recommendations (last N days)
 
-### GREEN — Safe to allow (approved {X} times)
-| Command Pattern | Times Approved | Risk |
-|----------------|---------------|------|
-| mix test *     | 47            | GREEN |
-| mix compile *  | 32            | GREEN |
-| ...            |               |       |
+### ADD — Missing permissions (from session scan)
+| Pattern to Add | Times Used | Risk | Example |
+|...
 
-### YELLOW — Recommended with caution (approved {X} times)
-| Command Pattern | Times Approved | Risk | Note |
-|----------------|---------------|------|------|
-| git commit *   | 23            | YELLOW | Writes to repo |
-| ...            |               |        |       |
+### REMOVE — Redundant/garbage entries
+| Entry | Reason |
+|...
 
-### RED — Never auto-allowed (still require approval)
-| Command Pattern | Times Approved | Risk |
-|----------------|---------------|------|
-| rm -rf *       | 2             | RED  |
+### RED — Require manual approval (not adding)
+| Command | Count | Risk |
+|...
 ```
 
-### Step 6: Apply (unless `--dry-run`)
+### Step 3: Apply (unless `--dry-run`)
 
-If user confirms, write GREEN + approved YELLOW commands to
-`.claude/settings.json` as `allowedTools` entries:
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(mix test*)",
-      "Bash(mix compile*)",
-      "Bash(mix format*)",
-      "Bash(git status)",
-      "Bash(git diff*)",
-      "Bash(git log*)"
-    ]
-  }
-}
-```
-
-**Merge** with existing settings — never overwrite.
-
-### Step 7: Summary
-
-Report what was added, what was skipped (RED), and suggest
-re-running in 2-4 weeks as workflow evolves.
+After user confirms, merge into `~/.claude/settings.json` under `permissions.allow`.
+Remove any garbage entries the user approved for removal.
 
 ## References
 
-- `references/risk-classification.md` — Full command classification rules
-- `references/settings-format.md` — Claude Code settings.json permission format
+- `${CLAUDE_SKILL_DIR}/references/risk-classification.md` — Full classification rules
+- `${CLAUDE_SKILL_DIR}/references/settings-format.md` — Permission pattern format

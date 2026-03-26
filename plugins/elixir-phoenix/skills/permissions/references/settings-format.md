@@ -34,22 +34,38 @@ Permissions live under the `permissions` key with `allow` and `deny` arrays:
 
 ## Pattern Syntax
 
-Each permission entry follows `Tool(pattern)` format:
+Each permission entry follows `Tool(pattern)` format. Two notations exist:
+
+### Colon separator (standard — used by Claude Code UI)
+
+When a user clicks "Allow always" in Claude Code, the entry is saved
+with `:` separating the command prefix from the wildcard:
 
 | Pattern | Matches |
 |---------|---------|
-| `Bash(mix test*)` | Any bash command starting with `mix test` |
-| `Bash(git status)` | Exact match only |
-| `Bash(git diff*)` | `git diff`, `git diff --staged`, etc. |
-| `Bash(mix format*)` | `mix format`, `mix format --check-formatted`, etc. |
+| `Bash(git:*)` | `git diff`, `git add`, `git status`, etc. |
+| `Bash(mix test:*)` | `mix test`, `mix test test/foo_test.exs`, etc. |
+| `Bash(mix format)` | Exact match: only `mix format` (no args) |
+| `Bash(python3:*)` | `python3 -c "..."`, `python3 script.py`, etc. |
+
+### Space separator (also works)
+
+Patterns can also use a space instead of `:` — both are equivalent:
+
+| Pattern | Matches |
+|---------|---------|
+| `Bash(mix test*)` | Same as `Bash(mix test:*)` |
+| `Bash(git diff*)` | Same as `Bash(git diff:*)` |
 
 ### Rules
 
 - `*` is a glob wildcard (matches any characters)
+- `:` before `*` acts as a space separator for matching
 - Place `*` at the end to match commands with any arguments
 - Exact strings (no `*`) match only that exact command
 - Patterns are case-sensitive
 - `deny` takes priority over `allow`
+- When writing new entries, use `:` format for consistency with Claude Code UI
 
 ## Recommended Permission Sets
 
