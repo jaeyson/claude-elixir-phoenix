@@ -4,8 +4,13 @@
   "private": true,
   "description": "Claude Code plugin for Elixir/Phoenix development",
   "scripts": {
-    "lint": "markdownlint \"**/*.md\" --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad",
-    "lint:fix": "markdownlint \"**/*.md\" --fix --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad",
+    "lint": "markdownlint \"**/*.md\" --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad --ignore lab/findings",
+    "lint:fix": "markdownlint \"**/*.md\" --fix --ignore node_modules --ignore docs --ignore reports --ignore analysis --ignore scratchpad --ignore lab/findings",
+    "eval": "bash lab/eval/run_eval.sh --changed",
+    "eval:all": "bash lab/eval/run_eval.sh --all",
+    "eval:skills": "bash lab/eval/run_eval.sh --skills",
+    "eval:agents": "bash lab/eval/run_eval.sh --agents",
+    "eval:triggers": "bash lab/eval/run_eval.sh --triggers",
     "prepare": "husky || true"
   },
   "devDependencies": {
