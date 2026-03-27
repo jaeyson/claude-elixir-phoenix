@@ -104,6 +104,43 @@ These commands form a connected pipeline — each reads the previous phase's out
 - **When**: Setting up plugin rules for a new project
 - **Output**: Injects rules into project CLAUDE.md
 
+### `/phx:permissions` — Permission analyzer
+
+- **When**: Too many "allow?" prompts, permission fatigue, after 5+ prompts in a session
+- **Input**: Optional `--days=N` (default: 14), `--dry-run`
+- **Output**: Scans session JSONL files for uncovered Bash commands, recommends `settings.json` changes
+- **Triage**: Interactive GREEN/YELLOW/RED triage with AskUserQuestion
+
+### `/phx:autoresearch` — Iterative code improvement
+
+- **When**: "Fix all credo issues", "improve coverage", "reduce warnings", measurable metric
+- **Input**: Target metric and optional strategy
+- **Output**: Iterative improvement loop with automatic rollback on failure
+
+### `/phx:challenge` — Rigorous review mode
+
+- **When**: "Grill me", "challenge this", want thorough scrutiny before merging
+- **Input**: Changed files (like review)
+- **Output**: Aggressive questioning of Ecto changes, LiveView events, PR readiness
+
+### `/phx:document` — Documentation generator
+
+- **When**: Need @moduledoc, @doc annotations, or README updates
+- **Input**: Modules or contexts to document
+- **Output**: Inline documentation in source files
+
+### `/phx:examples` — Pattern walkthroughs
+
+- **When**: "How do I...", "show me an example of...", learning patterns
+- **Input**: Pattern or topic description
+- **Output**: Practical examples with working code
+
+### `/ecto:constraint-debug` — Constraint violation debugger
+
+- **When**: unique_constraint, foreign_key_constraint, or check_constraint errors
+- **Input**: Error message or constraint name
+- **Output**: Traces triggers, checks migrations, finds duplicate data
+
 ## Analysis Commands
 
 ### `/phx:perf` — Performance analysis
@@ -207,4 +244,6 @@ Research:        /phx:research [topic]
 Evaluate lib:    /phx:research --library [name]
 Resume work:     /phx:work --continue
 Post-fix lesson: /phx:compound
+Permissions:     /phx:permissions
+Auto-improve:    /phx:autoresearch
 ```

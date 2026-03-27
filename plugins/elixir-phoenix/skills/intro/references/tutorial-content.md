@@ -312,6 +312,8 @@ The plugin works best when all layers are active: `/phx:init` for persistent rul
 | `/phx:verify` | Run all quality checks |
 | `/phx:research <topic>` | Research with parallel workers, Tidewave-first |
 | `/phx:pr-review <PR#>` | Address PR review comments |
+| `/phx:permissions` | Scan sessions, recommend safe Bash permissions |
+| `/phx:autoresearch` | Iterative code improvement against a metric |
 | `/phx:help [description]` | Interactive command advisor — helps pick the right command |
 
 **Analysis:**
@@ -324,6 +326,8 @@ The plugin works best when all layers are active: `/phx:init` for persistent rul
 | `/lv:assigns` | LiveView memory audit |
 | `/phx:boundaries` | Context boundary check |
 | `/phx:techdebt` | Technical debt analysis |
+| `/phx:trace <function>` | Call chain tracing |
+| `/ecto:constraint-debug` | Debug Ecto constraint errors |
 
 **Knowledge:**
 

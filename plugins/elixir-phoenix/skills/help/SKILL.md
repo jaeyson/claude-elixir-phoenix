@@ -53,6 +53,8 @@ Map the user's situation to one of these categories:
 | **Full cycle** | Large feature, new domain area | `/phx:full` |
 | **Project health** | "audit", "tech debt", "overall quality" | `/phx:audit`, `/phx:techdebt` |
 | **Deployment** | "deploy", "release", "production" | `/phx:verify` then deploy skill |
+| **Permissions** | "too many prompts", "allow", "permission fatigue" | `/phx:permissions` |
+| **Auto-improve** | "fix all credo", "reduce warnings", "improve coverage" | `/phx:autoresearch` |
 
 ### Step 3: Respond or Clarify
 

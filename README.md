@@ -2,7 +2,7 @@
 
 **Claude Code is great. But it doesn't know that `assign_new` silently skips on reconnect, that `:float` will corrupt your money fields, or that your Oban job isn't idempotent.**
 
-This plugin does. It coordinates **21 specialist agents** that plan, implement,
+This plugin does. It coordinates **20 specialist agents** that plan, implement,
 review, and verify your Elixir/Phoenix code in parallel -- each with domain
 expertise, fresh context, and enforced [Iron Laws](#iron-laws-non-negotiable-rules)
 that catch the bugs your tests won't.
@@ -34,7 +34,7 @@ that prevent the mistakes Elixir developers actually make in production.
 │  ⚗  Elixir/Phoenix Plugin for Claude Code                           │
 │                                                                     │
 │  ┌──────────┬──────────┬──────────┬──────────┬──────────┐           │
-│  │    21    │    41    │    96    │    18    │    22    │           │
+│  │    20    │    40    │    96    │    18    │    22    │           │
 │  │  Agents  │  Skills  │   Refs   │  Hooks   │Iron Laws │           │
 │  └──────────┴──────────┴──────────┴──────────┴──────────┘           │
 │                                                                     │
@@ -76,7 +76,7 @@ that prevent the mistakes Elixir developers actually make in production.
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-> **v2.6.0** -- 41 skills, 21 agents, 8-dimension quality eval, autoresearch self-improvement loop. Feedback welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
+> **v2.6.0** -- 40 skills, 20 agents, 8-dimension quality eval, autoresearch self-improvement loop. Feedback welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
 
 ## Installation
 
@@ -194,7 +194,7 @@ No more scattered files across `.claude/planning/`, `.claude/progress/`, `.claud
 
 ### Agent Hierarchy
 
-The plugin uses 21 agents organized into 3 tiers:
+The plugin uses 20 agents organized into 3 tiers:
 
 ```
                     ┌──────────────────────────────┐
@@ -500,7 +500,6 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 | `/phx:research <topic>`  | Research Elixir topics on the web                          |
 | `/phx:verify`            | Run full verification (compile, format, credo, test)       |
 | `/phx:permissions`       | Scan sessions, recommend safe Bash permissions             |
-| `/phx:autoresearch`      | Iterative code improvement against a measurable metric     |
 | `/phx:trace <function>`  | Build call trees to trace function flow                    |
 | `/phx:boundaries`        | Analyze Phoenix context boundaries with mix xref           |
 | `/phx:examples`          | Practical examples and pattern walkthroughs                |
@@ -516,7 +515,7 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 | `/phx:audit`         | Full project health audit with 5 parallel agents  |
 | `/phx:challenge`     | Rigorous review mode ("grill me")                 |
 
-## Agents (21)
+## Agents (20)
 
 | Agent                        | Model  | Memory  | Role                                         |
 | ---------------------------- | ------ | ------- | -------------------------------------------- |
@@ -540,7 +539,6 @@ The plugin enforces critical rules and **stops with an explanation** if code wou
 | **otp-advisor**              | sonnet | --      | GenServer, Supervisor, process design        |
 | **deployment-validator**     | sonnet | --      | Docker, Kubernetes, Fly.io config            |
 | **web-researcher**           | sonnet | --      | ElixirForum, HexDocs, GitHub research        |
-| **autoresearch-proposer**    | sonnet | --      | Read-only code improvement proposer          |
 
 Agents with `project` memory build up knowledge across sessions
 in `.claude/agent-memory/<agent-name>/`. Orchestrators remember
@@ -600,7 +598,7 @@ Every PR must pass the CI quality gate (lint + test + eval). Run locally before 
 ```bash
 make help             # Show all available commands
 make eval             # Quick: lint + score changed skills/agents only
-make eval-all         # Full structural: all 41 skills + all 21 agents
+make eval-all         # Full structural: all 40 skills + all 20 agents
 make eval-fix         # Auto-fix lint + show failures + suggest autoresearch
 make test             # 52 pytest tests for eval framework
 make ci               # Full CI: lint + test + eval (same as GitHub Actions)
