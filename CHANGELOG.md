@@ -5,7 +5,7 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.1] - 2026-03-27
+## [2.6.0] - 2026-03-27
 
 ### Added
 
@@ -61,7 +61,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`no_dangerous_patterns` matcher** — Skips Iron Laws, Red Flags, Detection,
   Checklist, Confidence Levels sections (false positive fixes for anti-pattern docs)
 - **README** — Updated counts (40 skills, 20 agents), added contributing guide with
-  eval commands, roadmap section, v2.5.1 badge
+  eval commands, roadmap section
 - **Permissions output format** — Fixed deprecated `Bash(name:*)` → `Bash(name *)`
   per Claude Code docs
 

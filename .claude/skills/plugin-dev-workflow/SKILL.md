@@ -15,7 +15,7 @@ Run `make help` to see all available commands:
 
 ```bash
 make eval          # Quick: lint + score changed skills/agents
-make eval-all      # Full: all 41 skills + 21 agents
+make eval-all      # Full: all 40 skills + 20 agents
 make eval-fix      # Auto-fix + show failures
 make test          # 52 pytest tests for eval framework
 make ci            # Full CI pipeline
