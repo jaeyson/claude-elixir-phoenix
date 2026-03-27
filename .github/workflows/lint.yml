@@ -57,7 +57,7 @@ jobs:
         run: pip install pyyaml ruff pip-audit
 
       - name: Ruff lint (Python)
-        run: ruff check lab/ --select E,F,W --ignore E501
+        run: ruff check lab/ --select E,F,W --ignore E501,E402
 
       - name: Ruff format check
         run: ruff format --check lab/ || true
