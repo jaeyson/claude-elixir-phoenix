@@ -76,7 +76,7 @@ that prevent the mistakes Elixir developers actually make in production.
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-> **v2.6.0** -- 40 skills, 20 agents, 8-dimension quality eval, autoresearch self-improvement loop. Feedback welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
+> **v2.5.1** -- 40 skills, 20 agents, 8-dimension quality eval, autoresearch self-improvement loop. Feedback welcome via [issues](https://github.com/oliver-kriska/claude-elixir-phoenix/issues).
 
 ## Installation
 

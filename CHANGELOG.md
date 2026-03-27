@@ -5,49 +5,76 @@ All notable changes to the Elixir/Phoenix Claude Code plugin.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.5.1] - 2026-03-27
 
 ### Added
 
-- **`/phx:help` command** — Interactive command advisor that helps users pick the
-  right command, skill, or agent for their situation. Accepts optional description
-  (`/phx:help how do I debug this?`) or reads ambient context (git status, existing
-  plans). Asks clarifying questions when intent is ambiguous
-- **`/phx:permissions` skill** — Analyzes recent sessions to identify frequently-approved
-  Bash commands, classifies by risk (GREEN/YELLOW/RED), recommends safe additions to
-  `settings.json`. Includes `--days` and `--dry-run` flags
-- **Autoresearch eval framework** (`lab/eval/`) — 8-dimension deterministic scoring
-  for plugin skills: completeness, accuracy, conciseness, triggering, safety,
-  clarity, specificity, behavioral. 24 Python matchers, per-skill eval definitions
-  for all 40 skills. Research-backed (SkillsBench, MePO, Anthropic official guide)
-- **Autoresearch loop** (`lab/autoresearch/`) — Self-improving skill that
-  autonomously proposes mutations, evaluates, and keeps/reverts via git. Includes
-  wrapper script (run-iteration.py), checks.sh, JSONL journal with ASI metadata,
-  ideas backlog. Inspired by Karpathy's autoresearch + pi-autoresearch
-- **Behavioral trigger eval** — Haiku-based trigger accuracy testing. 8 test prompts
-  per skill, measures precision/recall/accuracy of skill routing. Cost: ~$0.04 per
-  full sweep of all 40 skills
+- **`/phx:help` command** — Interactive command advisor that recommends the right
+  `/phx:` command based on user description or ambient context (git status, plans)
+- **`/phx:permissions` skill** — Analyzes recent sessions, classifies Bash commands
+  by risk (GREEN/YELLOW/RED), recommends safe additions to `settings.json`
+- **`/phx:verify` project-aware discovery** — Reads `mix.exs` to detect installed
+  tools (credo, dialyxir, sobelow, ex_check), adapts verification sequence.
+  Uses composite aliases (`mix ci`, `mix precommit`) when available, falls back
+  to individual steps if alias fails locally
+- **8-dimension eval framework** (`lab/eval/`) — Deterministic scoring for skills
+  (completeness, accuracy, conciseness, triggering, safety, clarity, specificity,
+  behavioral) and agents (completeness, accuracy, conciseness, safety, consistency).
+  24 Python matchers, per-skill eval definitions for all 40 skills + 20 agents
+- **Behavioral trigger eval** — Haiku-based trigger accuracy testing (8 prompts per
+  skill). Measures whether Claude routes user requests to the correct skill.
+  Cost: ~$1.50 per full sweep. Baseline: 84% average accuracy
+- **Autoresearch loop** (`lab/autoresearch/`) — Self-improving skill that proposes
+  mutations, evaluates, keeps/reverts via git. Wrapper script (run-iteration.py),
+  structural checks (checks.sh), JSONL journal with ASI failure metadata, ideas
+  backlog. Proven: 20+ iterations, 100% win rate
+- **Agent eval** (`lab/eval/agent_scorer.py`) — 5-dimension scoring for all 20
+  agents. Checks tools validity, read-only enforcement, bypassPermissions, model/
+  effort consistency. All 20 agents at perfect score
+- **CI Quality Gate** — 5-job pipeline: markdown/YAML/JSON lint, Python lint (ruff),
+  shell lint (shellcheck), security audits (npm audit, pip-audit), skill+agent eval.
+  52 pytest tests for the eval framework
+- **Makefile** — Primary command interface: `make eval`, `make test`, `make ci`,
+  `make eval-fix` (auto-fix + suggest autoresearch). Language-agnostic entry point
+- **`plugin-dev-workflow` local skill** — Auto-triggers when editing plugin files.
+  Guides contributors through eval commands, CLI syntax, pre-commit checklist
+- **Interesting findings log** — `lab/findings/interesting.jsonl` captures metrics,
+  research insights, bugs, patterns during development. 45+ entries
+- **Dependabot** for pip ecosystem + requirements.txt (PyYAML, pytest)
+- **Staged evaluation** (from Hyperagents paper) — `/phx:autoresearch` loop runs
+  cheap checks first (compile 5s), skips expensive checks (test 30s+) if cheap fail
 
 ### Changed
 
-- **Skill descriptions improved** (36 of 40 skills) — Added "Use when..." clauses
-  per Anthropic's trigger optimization guidance, added domain keywords, removed
-  vague words. Trigger accuracy baseline: 84% average across 40 skills
-- **Iron Laws added** to 6 skills that were missing them (hexdocs-fetcher,
-  learn-from-fix, quick, init, boundaries, verify)
-- **Stale references fixed** — `/phx:learn` → `/phx:learn-from-fix` in full,
-  review, learn-from-fix; YAML frontmatter fixed in perf and permissions
-- **Review Step 2 compressed** from 49 to 37 lines (removed redundant TaskCreate
-  code block)
-- **Planning orchestrator Phase 1c** — Expanded research cache reuse from 3 lines
-  to actionable implementation steps
+- **36 of 40 skill descriptions rewritten** — Added "Use when..." clauses per
+  Anthropic trigger optimization guide. Domain keywords added, vague words removed.
+  Behavioral sweep improved plan (0%→100% recall), quick (0%→100%), boundaries,
+  document, liveview-patterns, pr-review, security
+- **Iron Laws added** to 6 skills missing them (hexdocs-fetcher, learn-from-fix,
+  quick, init, boundaries, verify)
+- **Stale references fixed** — `/phx:learn` → `/phx:learn-from-fix` across 3 skills.
+  YAML frontmatter fixed in perf and permissions (unquoted brackets)
+- **Review Step 2 compressed** from 49 to 37 lines
+- **Planning orchestrator** — Research cache reuse expanded with glob discovery,
+  keyword grep, freshness gate (48h), agent skip mapping
+- **deep-bug-investigator** — effort: high → medium (matches sonnet model)
+- **`no_dangerous_patterns` matcher** — Skips Iron Laws, Red Flags, Detection,
+  Checklist, Confidence Levels sections (false positive fixes for anti-pattern docs)
+- **README** — Updated counts (40 skills, 20 agents), added contributing guide with
+  eval commands, roadmap section, v2.5.1 badge
+- **Permissions output format** — Fixed deprecated `Bash(name:*)` → `Bash(name *)`
+  per Claude Code docs
 
 ### Fixed
 
-- **`setup-dirs.sh`** — Added `.claude/research/` to SessionStart directory
-  creation so the research output directory exists before `/phx:research` runs
-- **`learn-from-fix` name mismatch** — Frontmatter `name: phx:learn` corrected to
-  `name: phx:learn-from-fix` to match directory name
+- **`/phx:verify` alias fallback** — Discovery now validates aliases against
+  `mix.lock` before using them. Falls back to individual steps if composite
+  command fails (e.g., `mix check` when ex_check not installed locally)
+- **`setup-dirs.sh`** — Added `.claude/research/` to SessionStart directory creation
+- **`learn-from-fix` name mismatch** — Frontmatter corrected to match directory
+- **CI yamllint** — Ignores `node_modules/` and `.claude/` directories
+- **CI ruff** — Ignores E402 (imports after sys.path.insert are intentional)
+- **Unused Python imports** — Cleaned across agent_scorer, generate_evals, matchers
 
 ## [2.5.0] - 2026-03-21
 
