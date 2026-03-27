@@ -95,6 +95,18 @@ if [ "$FULL_MODE" = true ]; then
   CONTEXT+="\n- Max cycles, retries, and blocker limits still apply"
 fi
 
+# Append scratchpad Dead Ends to context (most valuable section for session continuity)
+if [ -n "$PLAN_SLUG" ]; then
+  SCRATCHPAD=".claude/plans/${PLAN_SLUG}/scratchpad.md"
+  if [ -f "$SCRATCHPAD" ]; then
+    DEAD_ENDS=$(sed -n '/^## Dead Ends/,/^## /p' "$SCRATCHPAD" | head -20)
+    if [ -n "$DEAD_ENDS" ] && ! echo "$DEAD_ENDS" | grep -q "(none yet)"; then
+      CONTEXT+="\n\nSCRATCHPAD Dead Ends (DO NOT RETRY these approaches):"
+      CONTEXT+="\n${DEAD_ENDS}"
+    fi
+  fi
+fi
+
 # Output as JSON with systemMessage (hookSpecificOutput doesn't support PreCompact hookEventName)
 if [ -n "$CONTEXT" ]; then
   printf '%b' "$CONTEXT" | jq -Rs '{systemMessage: .}'
